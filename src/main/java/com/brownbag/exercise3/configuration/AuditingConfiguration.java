@@ -13,6 +13,6 @@ public class AuditingConfiguration {
 
     @Bean
     public AuditorAware<String> auditorProvider() {
-        return () -> Optional.ofNullable("rozend");
+        return () -> Optional.ofNullable("zenpai");
     }
 }
