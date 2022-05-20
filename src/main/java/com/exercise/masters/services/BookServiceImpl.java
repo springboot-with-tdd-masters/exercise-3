@@ -55,8 +55,8 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public Book findBookByName(Long authorId, String name) throws RecordNotFoundException {
-		Optional<Book> book = bookRepository.findByNameAndAuthorId(name, authorId);
+	public Book findBookByName(String name) throws RecordNotFoundException {
+		Optional<Book> book = bookRepository.findByName(name);
 		return book.map(obj -> {
 			return obj;
 		})

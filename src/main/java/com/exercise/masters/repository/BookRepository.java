@@ -20,6 +20,6 @@ public interface BookRepository extends PagingAndSortingRepository<Book, Long>{
 	
 	public Optional<Book> findByIdAndAuthorId(Long id, Long authorId);
 	
-	public Optional<Book> findByNameAndAuthorId(String name, Long authorId);
+	public Optional<Book> findByName(String name);
 	
 }

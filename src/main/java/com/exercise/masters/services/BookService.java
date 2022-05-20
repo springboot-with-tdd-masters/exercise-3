@@ -18,7 +18,7 @@ public interface BookService {
 	
 	public Book findBookById(Long authorId, Long bookId) throws RecordNotFoundException;
 	
-	public Book findBookByName(Long authorId, String name) throws RecordNotFoundException;
+	public Book findBookByName(String name) throws RecordNotFoundException;
 	
 	public Book save(Long authorId, Book book) throws RecordNotFoundException;
 	

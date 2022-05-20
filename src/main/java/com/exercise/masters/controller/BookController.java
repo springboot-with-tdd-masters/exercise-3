@@ -61,5 +61,11 @@ public class BookController {
     	Book book = bookService.deleteById(id);
         return new ResponseEntity<Book>(book, new HttpHeaders(), HttpStatus.OK);
     }
+    
+    @GetMapping("/books")
+    public ResponseEntity<Book> findBookByName(@RequestParam String name) throws RecordNotFoundException {
+    	Book book = bookService.findBookByName(name);
+        return new ResponseEntity<Book>(book, new HttpHeaders(), HttpStatus.OK);
+    }
 	
 }
