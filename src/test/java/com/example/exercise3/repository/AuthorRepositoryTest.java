@@ -63,7 +63,7 @@ public class AuthorRepositoryTest {
 	}
 	
 	@Test
-	@DisplayName("Get author with books with correct details")
+	@DisplayName("Get author with books")
 	public void getAuthorWithBooks() {
 	     Author newAuthor = new Author();
 	     newAuthor.setName("J.K. Rowling");

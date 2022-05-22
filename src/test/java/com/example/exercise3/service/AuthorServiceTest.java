@@ -2,6 +2,7 @@ package com.example.exercise3.service;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import com.example.exercise3.exception.AuthorNotFoundException;
 import com.example.exercise3.model.Author;
 import com.example.exercise3.model.dto.AuthorDto;
 import com.example.exercise3.repository.AuthorRepository;
@@ -64,6 +67,39 @@ public class AuthorServiceTest {
 				() -> assertEquals(newAuthor.getId(), author.getId()),
 	            () -> assertEquals(newAuthor.getName(), author.getName())
 	        );		
+	}
+	
+	@Test
+	@DisplayName("Should return author with correct details")
+	public void shouldReturnAuthorWithCorrectDetails() {
+		Author author = new Author();
+		author.setId(1L);
+		author.setName("JK Rowling");
+		
+		Date today = new Date();
+		author.setCreatedDate(today);		
+		author.setUpdateDate(today);
+
+		when(authorRepository.findById(1L))
+			.thenReturn(Optional.of(author));
+		
+		AuthorDto actualResponse = authorService.getAuthor(1L);
+		
+		assertAll(
+			    () -> assertEquals(author.getCreatedDate(), actualResponse.getCreateDate()),
+	            () -> assertEquals(author.getCreatedDate(), actualResponse.getCreateDate()),	            
+				() -> assertEquals(author.getId(), actualResponse.getId()),
+	            () -> assertEquals(author.getName(), actualResponse.getName())
+	        );		
+	}
+	
+	@Test
+	@DisplayName("Should throw AuthorNotFoundException when record does not exist")
+	public void shouldThrowExceptionWhenAuthorNotExist() {
+		when(authorRepository.findById(1L))
+			.thenReturn(Optional.empty());
+		
+		assertThrows(AuthorNotFoundException.class, () -> authorService.getAuthor(1L));
 	}
 	
 	@Test

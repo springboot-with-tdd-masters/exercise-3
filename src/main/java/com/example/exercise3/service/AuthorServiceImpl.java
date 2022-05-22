@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.exercise3.exception.AuthorNotFoundException;
 import com.example.exercise3.exception.BookNotFoundException;
 import com.example.exercise3.model.Author;
 import com.example.exercise3.model.Book;
@@ -37,6 +38,12 @@ public class AuthorServiceImpl implements AccountService{
 		return new AuthorDto(savedAuthor);
 	}
 	
+
+	public AuthorDto getAuthor(Long id) {
+		return authorRepository.findById(id)
+				.map(AuthorDto::convertToDto)
+				.orElseThrow(AuthorNotFoundException::new);
+	}
 
 	public Page<AuthorDto> findAll(Pageable pageable) {
 		return authorRepository.findAll(pageable).map(AuthorDto::convertToDto);
@@ -66,5 +73,4 @@ public class AuthorServiceImpl implements AccountService{
 		Book toDelete = getBookById(id);
 		bookRepository.delete(toDelete);
 	}
-
 }

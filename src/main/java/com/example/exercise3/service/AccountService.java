@@ -7,6 +7,6 @@ import com.example.exercise3.model.dto.AuthorDto;
 
 public interface AccountService {
 	AuthorDto createAuthor(String authorName);
+	AuthorDto getAuthor(Long id);
 	Page<AuthorDto> findAll(Pageable pageable);
-	
 }
