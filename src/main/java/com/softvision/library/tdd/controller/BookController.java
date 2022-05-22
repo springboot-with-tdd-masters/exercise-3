@@ -12,12 +12,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/books")
 public class BookController {
 
     @Autowired
     BookService bookService;
+
+    public ResponseEntity<List<Book>> getAll() {
+        List<Book> result = bookService.getAll();
+        if (result == null || result.isEmpty()) {
+            return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.OK);
+    }
 
     @GetMapping("{id}")
     public ResponseEntity<Book> get(@PathVariable long id) {
@@ -41,5 +51,11 @@ public class BookController {
             return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(result, new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Long> delete(@PathVariable long id) {
+        bookService.delete(id);
+        return new ResponseEntity<>(id, new HttpHeaders(), HttpStatus.OK);
     }
 }

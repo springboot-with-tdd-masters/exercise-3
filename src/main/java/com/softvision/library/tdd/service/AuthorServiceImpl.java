@@ -38,4 +38,11 @@ public class AuthorServiceImpl implements AuthorService {
             return bookRepository.save(book);
         }).orElseThrow(RecordNotFoundException::new);
     }
+
+    @Override
+    public void delete(long id) {
+        authorRepository.findById(id).ifPresentOrElse(author -> authorRepository.deleteById(author.getId()), () -> {
+            throw new RecordNotFoundException();
+        });
+    }
 }

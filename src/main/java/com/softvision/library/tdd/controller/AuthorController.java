@@ -47,4 +47,10 @@ public class AuthorController {
     public ResponseEntity<Book> create(@PathVariable long id, @RequestBody Book book) {
         return new ResponseEntity<>(authorService.createBook(id, book), new HttpHeaders(), HttpStatus.CREATED);
     }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<Long> delete(@PathVariable long id) {
+        authorService.delete(id);
+        return new ResponseEntity<>(id, new HttpHeaders(), HttpStatus.OK);
+    }
 }

@@ -5,6 +5,9 @@ import com.softvision.library.tdd.model.Book;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import static com.softvision.library.tdd.LibraryMocks.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,6 +62,19 @@ public class BookRepositoryTests {
         assertThat(bookRepository.findAll())
                 .extracting(PROPERTIES_TO_EXTRACT)
                 .contains(tuple(MOCK_TITLE_1, MOCK_AUTHOR_1), tuple(MOCK_TITLE_2, MOCK_AUTHOR_2));
+    }
+
+    @Test
+    @DisplayName("Find By Author ID - should be able to retrieve all books written by the author")
+    void test_findByAuthorId() {
+        Author savedAuthor1 = authorRepository.save(getMockAuthor1());
+        Book book1 = getMockBook1();
+        book1.setAuthor(savedAuthor1);
+        bookRepository.save(book1);
+
+        assertThat(bookRepository.findByAuthorId(savedAuthor1.getId(), null))
+                .extracting("title")
+                .contains(MOCK_TITLE_1);
     }
 
     @AfterEach

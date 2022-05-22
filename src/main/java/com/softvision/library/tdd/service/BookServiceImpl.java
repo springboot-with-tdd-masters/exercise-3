@@ -47,5 +47,10 @@ public class BookServiceImpl implements BookService {
         return repository.findByAuthorId(id, pageable);
     }
 
-
+    @Override
+    public void delete(long id) {
+        repository.findById(id).ifPresentOrElse(book -> repository.deleteById(book.getId()), () -> {
+            throw new RecordNotFoundException();
+        });
+    }
 }

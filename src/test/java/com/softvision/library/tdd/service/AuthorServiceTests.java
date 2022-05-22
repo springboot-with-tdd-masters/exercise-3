@@ -4,6 +4,7 @@ import com.softvision.library.tdd.model.Author;
 import com.softvision.library.tdd.model.Book;
 import com.softvision.library.tdd.model.RecordNotFoundException;
 import com.softvision.library.tdd.repository.AuthorRepository;
+import com.softvision.library.tdd.repository.BookRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,8 @@ public class AuthorServiceTests {
 
     @Mock
     AuthorRepository mockAuthorRepository;
+    @Mock
+    BookRepository mockBookRepository;
 
     @Mock
     Pageable mockPageable;
@@ -79,9 +82,8 @@ public class AuthorServiceTests {
     @Test
     @DisplayName("Create Book - should create a book")
     void test_createBook() {
-        when(mockAuthorExpected.getBooks()).thenReturn(new HashSet<>(Set.of(mockBook)));
         when(mockAuthorRepository.findById(1L)).thenReturn(Optional.of(mockAuthorExpected));
-        when(mockAuthorRepository.save(mockAuthorExpected)).thenReturn(mockAuthorExpected);
+        when(mockBookRepository.save(mockBook)).thenReturn(mockBook);
 
         assertSame(mockBook, authorService.createBook(1L, mockBook));
 

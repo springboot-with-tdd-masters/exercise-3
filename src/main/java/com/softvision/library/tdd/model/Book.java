@@ -14,8 +14,8 @@ public class Book extends BaseEntity{
 	private long id;
 	private String title;
 
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonIgnore
-	@ManyToOne
 	private Author author;
 
 	public Book() {

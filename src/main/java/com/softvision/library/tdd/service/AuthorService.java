@@ -13,4 +13,6 @@ public interface AuthorService {
     Author getById(long id);
 
     Book createBook(long id, Book book);
+
+    void delete(long id);
 }
