@@ -35,7 +35,7 @@ public class AuthorRepositoryTest {
 
 	     assertEquals(author.getName(), savedAuthor.getName());
 	     assertNotNull(savedAuthor.getCreatedDate());
-	     assertNotNull(savedAuthor.getUpdateDate());
+	     assertNotNull(savedAuthor.getUpdatedDate());
 	}
 	
 	@Test
@@ -89,7 +89,7 @@ public class AuthorRepositoryTest {
 	}
 	
 	@Test
-	@DisplayName("Get paginated list of authors with correct sort")
+	@DisplayName("Get authors with paging and sorting")
 	public void getPaginatedAuthorListSortedByName() {
 		Author author1 = new Author();
 	    author1.setName("J. K. Rowling");

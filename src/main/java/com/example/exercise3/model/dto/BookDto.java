@@ -17,7 +17,7 @@ public class BookDto {
 	
 	public BookDto(Book book) {
 		createdDate = book.getCreatedDate();
-		updatedDate = book.getUpdateDate();
+		updatedDate = book.getUpdatedDate();
 		id = book.getId();
 		title = book.getTitle();
 		description = book.getDescription();
@@ -59,5 +59,9 @@ public class BookDto {
 	}
 	public void setAuthorId(Long authorId) {
 		this.authorId = authorId;
+	}
+	
+	public static BookDto convertToDto(Book book) {
+		return new BookDto(book);
 	}
 }

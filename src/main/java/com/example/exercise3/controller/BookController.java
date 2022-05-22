@@ -9,17 +9,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.exercise3.model.Book;
-import com.example.exercise3.service.BookService;
+import com.example.exercise3.service.BookServiceImpl;
 
 @RestController
 @RequestMapping("/books") 
 public class BookController {
 	
-	@Autowired
-	private BookService bookService;
 	
-	@GetMapping 
-	public List<Book> getBooks(@RequestParam String title) {
-		return bookService.getAllBooks(); 
-	}
 }

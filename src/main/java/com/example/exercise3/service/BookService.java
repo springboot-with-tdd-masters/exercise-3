@@ -1,43 +1,14 @@
 package com.example.exercise3.service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.example.exercise3.model.dto.BookDto;
 
-import com.example.exercise3.exception.BookNotFoundException;
-import com.example.exercise3.model.Book;
-import com.example.exercise3.repository.BookRepository;
+public interface BookService {
+	
+	 Page<BookDto> getBook(Long bookId, Long authorId, Pageable pageable);
+	 Page<BookDto> getBooks(String string);
+	 Page<BookDto> getBooks(Long authorId, Pageable pageable);
 
-@Service
-public class BookService {
-	
-	@Autowired
-	private BookRepository bookRepository;
-	
-	
-	public List<Book> getAllBooks() { 
-		return bookRepository.findAll(); 
-	}
-	
-	public Book getBookById(Long id) {
-		return bookRepository.findById(id)
-				.orElseThrow(BookNotFoundException::new);
-	}
-	
-	public Book addBook(Book book) {
-		return bookRepository.save(book);
-	}
-	
-	public Book updateBook(Book book) {
-		Book toUpdate = getBookById(book.getId());
-		toUpdate.setTitle(book.getTitle());
-		toUpdate.setAuthor(book.getAuthor());
-		return bookRepository.save(toUpdate);
-	}
-	
-	public void deleteBook(Long id) {
-		Book toDelete = getBookById(id);
-		bookRepository.delete(toDelete);
-	}
 }

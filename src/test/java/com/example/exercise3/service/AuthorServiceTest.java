@@ -6,11 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +51,7 @@ public class AuthorServiceTest {
 		
 		Date today = new Date();
 		newAuthor.setCreatedDate(today);		
-		newAuthor.setUpdateDate(today);
+		newAuthor.setUpdatedDate(today);
 
 		when(authorRepository.save(any(Author.class)))
 			.thenReturn(newAuthor);
@@ -78,7 +75,7 @@ public class AuthorServiceTest {
 		
 		Date today = new Date();
 		author.setCreatedDate(today);		
-		author.setUpdateDate(today);
+		author.setUpdatedDate(today);
 
 		when(authorRepository.findById(1L))
 			.thenReturn(Optional.of(author));

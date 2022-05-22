@@ -21,7 +21,7 @@ import com.example.exercise3.repository.BookRepository;
 import ch.qos.logback.core.pattern.Converter;
 
 @Service
-public class AuthorServiceImpl implements AccountService{
+public class AuthorServiceImpl implements AuthorService{
 	
 	@Autowired
 	private AuthorRepository authorRepository;

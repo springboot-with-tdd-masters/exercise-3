@@ -24,7 +24,7 @@ public abstract class AuditableEntity implements Serializable{
 	
 	@LastModifiedDate
 	@Column(name = "updated_date")
-	private Date updateDate;
+	private Date updatedDate;
 
 	public Date getCreatedDate() {
 		return createdDate;
@@ -34,17 +34,17 @@ public abstract class AuditableEntity implements Serializable{
 		this.createdDate = createdDate;
 	}
 
-	public Date getUpdateDate() {
-		return updateDate;
+	public Date getUpdatedDate() {
+		return updatedDate;
 	}
 
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
+	public void setUpdatedDate(Date updateDate) {
+		this.updatedDate = updateDate;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(createdDate, updateDate);
+		return Objects.hash(createdDate, updatedDate);
 	}
 
 	@Override
@@ -56,6 +56,6 @@ public abstract class AuditableEntity implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		AuditableEntity other = (AuditableEntity) obj;
-		return Objects.equals(createdDate, other.createdDate) && Objects.equals(updateDate, other.updateDate);
+		return Objects.equals(createdDate, other.createdDate) && Objects.equals(updatedDate, other.updatedDate);
 	}
 }
