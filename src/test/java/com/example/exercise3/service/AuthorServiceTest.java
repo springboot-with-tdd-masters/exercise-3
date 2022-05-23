@@ -46,47 +46,51 @@ public class AuthorServiceTest {
 		String authorName = "JK Rowling";
 		
 		Author newAuthor = new Author();
-		newAuthor.setId(1L);
 		newAuthor.setName(authorName);
 		
-		Date today = new Date();
-		newAuthor.setCreatedDate(today);		
-		newAuthor.setUpdatedDate(today);
-
-		when(authorRepository.save(any(Author.class)))
-			.thenReturn(newAuthor);
+		//expected response
+		Author expectedResponse = new Author();
+		expectedResponse.setId(1L);
+		expectedResponse.setName(authorName);
 		
-		AuthorDto author = authorService.createAuthor(authorName);
+		Date today = new Date();
+		expectedResponse.setCreatedDate(today);		
+		expectedResponse.setUpdatedDate(today);
+
+		when(authorRepository.save(newAuthor))
+			.thenReturn(expectedResponse);
+		
+		AuthorDto actualResponse = authorService.createAuthor(authorName);
 		
 		assertAll(
-			    () -> assertEquals(newAuthor.getCreatedDate(), author.getCreateDate()),
-	            () -> assertEquals(newAuthor.getCreatedDate(), author.getCreateDate()),	            
-				() -> assertEquals(newAuthor.getId(), author.getId()),
-	            () -> assertEquals(newAuthor.getName(), author.getName())
+			    () -> assertEquals(expectedResponse.getCreatedDate(), actualResponse.getCreateDate()),
+	            () -> assertEquals(expectedResponse.getCreatedDate(), actualResponse.getCreateDate()),	            
+				() -> assertEquals(expectedResponse.getId(), actualResponse.getId()),
+	            () -> assertEquals(expectedResponse.getName(), actualResponse.getName())
 	        );		
 	}
 	
 	@Test
 	@DisplayName("Should return author with correct details")
 	public void shouldReturnAuthorWithCorrectDetails() {
-		Author author = new Author();
-		author.setId(1L);
-		author.setName("JK Rowling");
+		Author expectedResponse = new Author();
+		expectedResponse.setId(1L);
+		expectedResponse.setName("JK Rowling");
 		
 		Date today = new Date();
-		author.setCreatedDate(today);		
-		author.setUpdatedDate(today);
+		expectedResponse.setCreatedDate(today);		
+		expectedResponse.setUpdatedDate(today);
 
 		when(authorRepository.findById(1L))
-			.thenReturn(Optional.of(author));
+			.thenReturn(Optional.of(expectedResponse));
 		
 		AuthorDto actualResponse = authorService.getAuthor(1L);
 		
 		assertAll(
-			    () -> assertEquals(author.getCreatedDate(), actualResponse.getCreateDate()),
-	            () -> assertEquals(author.getCreatedDate(), actualResponse.getCreateDate()),	            
-				() -> assertEquals(author.getId(), actualResponse.getId()),
-	            () -> assertEquals(author.getName(), actualResponse.getName())
+			    () -> assertEquals(expectedResponse.getCreatedDate(), actualResponse.getCreateDate()),
+	            () -> assertEquals(expectedResponse.getCreatedDate(), actualResponse.getCreateDate()),	            
+				() -> assertEquals(expectedResponse.getId(), actualResponse.getId()),
+	            () -> assertEquals(expectedResponse.getName(), actualResponse.getName())
 	        );		
 	}
 	
