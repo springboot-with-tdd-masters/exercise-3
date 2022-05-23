@@ -33,6 +33,8 @@ public class AuthorConverterImpl implements AuthorConverter {
 
         author.setId(authorEntity.getId());
         author.setName(authorEntity.getName());
+        author.setCreatedAt(String.valueOf(authorEntity.getCreatedDate()));
+        author.setUpdatedAt(String.valueOf(authorEntity.getLastModifiedDate()));
 
         return author;
     }

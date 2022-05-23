@@ -1,5 +1,6 @@
 package com.softvision.books.services.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Pagination<T> {
@@ -30,5 +31,9 @@ public class Pagination<T> {
 
     public static <T> Pagination<T> of(List<T> contents, PageBean pageBean) {
         return new Pagination<>(contents, pageBean);
+    }
+
+    public static <T> Pagination<T> empty() {
+        return Pagination.of(new ArrayList<>(), PageBean.empty());
     }
 }
