@@ -8,17 +8,28 @@ public class Book {
 
     private String title;
 
-    private String author;
+    private String description;
+
+    private Author author;
+
+    private String createdAt;
+
+    private String updatedAt;
 
     public Book() {}
 
-    public Book(String title, String author) {
-        this(null, title, author);
+    public Book(String title, String description) {
+        this(null, title, description, null);
     }
 
-    public Book(Long id, String title, String author) {
+    public Book(Long id, String title, String description) {
+        this(id, title, description, null);
+    }
+
+    public Book(Long id, String title, String description, Author author) {
         this.id = id;
         this.title = title;
+        this.description = description;
         this.author = author;
     }
 
@@ -38,12 +49,36 @@ public class Book {
         this.title = title;
     }
 
-    public String getAuthor() {
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Author getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(Author author) {
         this.author = author;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     @Override
@@ -51,13 +86,12 @@ public class Book {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Book book = (Book) o;
-        return Objects.equals(id, book.id) &&
-                Objects.equals(title, book.title) &&
-                Objects.equals(author, book.author);
+        return Objects.equals(title, book.title) &&
+                Objects.equals(description, book.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, author);
+        return Objects.hash(title, description);
     }
 }

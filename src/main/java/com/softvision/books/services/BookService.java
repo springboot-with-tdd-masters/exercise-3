@@ -1,12 +1,18 @@
 package com.softvision.books.services;
 
 import com.softvision.books.services.domain.Book;
-
-import java.util.List;
+import com.softvision.books.services.domain.Pagination;
+import org.springframework.data.domain.Pageable;
 
 public interface BookService {
 
-    Book save(Book book);
+    Pagination<Book> findAll(Long authorId, Pageable pageable);
 
-    List<Book> findAll();
+    Book findById(Long id);
+
+    Book add(Long authorId, Book book);
+
+    Book update(Long id, Book book);
+
+    void deleteById(Long id);
 }

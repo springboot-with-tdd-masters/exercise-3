@@ -15,11 +15,11 @@ public class AbstractEntity {
     @Column(name = "id")
     protected Long id;
 
-//    @CreatedDate
+    @CreatedDate
     @Column(name = "created_date")
     private Date createdDate;
 
-//    @LastModifiedDate
+    @LastModifiedDate
     @Column(name = "last_modified_date")
     private Date lastModifiedDate;
 

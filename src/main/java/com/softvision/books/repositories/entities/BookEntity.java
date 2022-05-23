@@ -1,23 +1,23 @@
 package com.softvision.books.repositories.entities;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.Objects;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class BookEntity extends AbstractEntity {
 
     private String title;
 
-    private String author;
+    private String description;
+
+    @ManyToOne(optional = false)
+    private AuthorEntity author;
 
     public BookEntity() {}
 
-    public BookEntity(String title, String author) {
+    public BookEntity(String title, String description) {
         this.title = title;
-        this.author = author;
+        this.description = description;
     }
 
     public String getTitle() {
@@ -28,26 +28,19 @@ public class BookEntity extends AbstractEntity {
         this.title = title;
     }
 
-    public String getAuthor() {
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public AuthorEntity getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(AuthorEntity author) {
         this.author = author;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BookEntity that = (BookEntity) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(title, that.title) &&
-                Objects.equals(author, that.author);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, author);
     }
 }

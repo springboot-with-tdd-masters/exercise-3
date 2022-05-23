@@ -1,16 +1,19 @@
 package com.softvision.books.services.impl;
 
+import com.softvision.books.exeptions.NotFoundException;
+import com.softvision.books.repositories.AuthorRepository;
 import com.softvision.books.repositories.BookRepository;
+import com.softvision.books.repositories.entities.AuthorEntity;
 import com.softvision.books.repositories.entities.BookEntity;
 import com.softvision.books.services.BookService;
 import com.softvision.books.services.converters.BookConverter;
 import com.softvision.books.services.domain.Book;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.softvision.books.services.domain.Pagination;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -20,31 +23,71 @@ public class BookServiceImpl implements BookService {
 
     private BookConverter bookConverter;
 
-    @Autowired
-    public void setBookRepository(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
+    private AuthorRepository authorRepository;
 
-    @Autowired
-    public void setBookConverter(BookConverter bookConverter) {
+    public BookServiceImpl(
+            BookRepository bookRepository,
+            BookConverter bookConverter,
+            AuthorRepository authorRepository) {
+        this.bookRepository = bookRepository;
         this.bookConverter = bookConverter;
+        this.authorRepository = authorRepository;
     }
 
     @Override
-    public Book save(Book book) {
+    public Pagination<Book> findAll(Long authorId, Pageable pageable) {
+
+        final Page<BookEntity> bookEntityPage = bookRepository.findByAuthorId(authorId, pageable);
+
+        return bookConverter.convert(bookEntityPage);
+    }
+
+    @Override
+    public Book findById(Long id) {
+
+        final BookEntity bookEntity = findBookEntityById(id);
+
+        return bookConverter.convert(bookEntity);
+    }
+
+    @Override
+    public Book add(Long authorId, Book book) {
+
+        final AuthorEntity authorEntity = authorRepository.findById(authorId)
+                .orElseThrow(() -> new NotFoundException("Author not found, book must have an Author"));
 
         final BookEntity bookEntity = bookConverter.convert(book);
+        bookEntity.setAuthor(authorEntity);
 
-        final BookEntity savedEntity = bookRepository.save(bookEntity);
+        final BookEntity savedBook = bookRepository.save(bookEntity);
 
-        return bookConverter.convert(savedEntity);
+        return bookConverter.convert(savedBook);
     }
 
     @Override
-    public List<Book> findAll() {
-        return bookRepository.findAll()
-                .stream()
-                .map(bookConverter::convert)
-                .collect(Collectors.toList());
+    public Book update(Long id, Book book) {
+
+        final BookEntity existingBook = findBookEntityById(id);
+
+        existingBook.setTitle(book.getTitle());
+        existingBook.setDescription(book.getDescription());
+
+        bookRepository.save(existingBook);
+
+        return bookConverter.convert(existingBook);
     }
+
+    @Override
+    public void deleteById(Long id) {
+
+        final BookEntity existingBook = findBookEntityById(id);
+
+        bookRepository.delete(existingBook);
+    }
+
+    private BookEntity findBookEntityById(Long id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Book not found"));
+    }
+
 }
