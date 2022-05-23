@@ -8,7 +8,7 @@ import com.example.exercise3.model.Author;
 
 
 public class AuthorDto {
-	private Date createDate;
+	private Date createdDate;
 	private Date updatedDate;
 	private Long id;
 	private String name;
@@ -18,7 +18,7 @@ public class AuthorDto {
 	public AuthorDto(Author author) {
 		id = author.getId();
 		name = author.getName();
-		createDate = author.getCreatedDate();
+		createdDate = author.getCreatedDate();
 		updatedDate = author.getCreatedDate();
 	};
 	
@@ -34,11 +34,11 @@ public class AuthorDto {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Date getCreateDate() {
-		return createDate;
+	public Date getCreatedDate() {
+		return createdDate;
 	}
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
 	}
 	public Date getUpdatedDate() {
 		return updatedDate;

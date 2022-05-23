@@ -35,7 +35,7 @@ public class AuthorServiceImpl implements AuthorService{
 		
 		Author savedAuthor = authorRepository.save(author);
 		
-		return new AuthorDto(savedAuthor);
+		return AuthorDto.convertToDto(savedAuthor);
 	}
 	
 

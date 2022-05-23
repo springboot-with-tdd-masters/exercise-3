@@ -63,8 +63,8 @@ public class AuthorServiceTest {
 		AuthorDto actualResponse = authorService.createAuthor(authorName);
 		
 		assertAll(
-			    () -> assertEquals(expectedResponse.getCreatedDate(), actualResponse.getCreateDate()),
-	            () -> assertEquals(expectedResponse.getCreatedDate(), actualResponse.getCreateDate()),	            
+			    () -> assertEquals(expectedResponse.getCreatedDate(), actualResponse.getCreatedDate()),
+	            () -> assertEquals(expectedResponse.getCreatedDate(), actualResponse.getCreatedDate()),	            
 				() -> assertEquals(expectedResponse.getId(), actualResponse.getId()),
 	            () -> assertEquals(expectedResponse.getName(), actualResponse.getName())
 	        );		
@@ -87,8 +87,8 @@ public class AuthorServiceTest {
 		AuthorDto actualResponse = authorService.getAuthor(1L);
 		
 		assertAll(
-			    () -> assertEquals(expectedResponse.getCreatedDate(), actualResponse.getCreateDate()),
-	            () -> assertEquals(expectedResponse.getCreatedDate(), actualResponse.getCreateDate()),	            
+			    () -> assertEquals(expectedResponse.getCreatedDate(), actualResponse.getCreatedDate()),
+	            () -> assertEquals(expectedResponse.getCreatedDate(), actualResponse.getCreatedDate()),	            
 				() -> assertEquals(expectedResponse.getId(), actualResponse.getId()),
 	            () -> assertEquals(expectedResponse.getName(), actualResponse.getName())
 	        );		
