@@ -18,15 +18,8 @@ public class Pagination<T> {
         return contents;
     }
 
-    public void setContents(List<T> contents) {
-        this.contents = contents;
-    }
     public PageBean getPage() {
         return page;
-    }
-
-    public void setPage(PageBean pageBean) {
-        this.page = pageBean;
     }
 
     public static <T> Pagination<T> of(List<T> contents, PageBean pageBean) {

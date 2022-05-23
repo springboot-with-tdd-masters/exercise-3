@@ -1,6 +1,5 @@
 package com.softvision.books.services.domain;
 
-import java.util.Date;
 import java.util.Objects;
 
 public class Author {
