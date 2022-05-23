@@ -15,4 +15,6 @@ public interface AuthorService {
     Book createBook(long id, Book book);
 
     void delete(long id);
+
+    Page<Author> getContainingName(String containsInfix, Pageable pageable);
 }

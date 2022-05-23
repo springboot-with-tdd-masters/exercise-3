@@ -5,6 +5,7 @@ import com.softvision.library.tdd.model.RecordNotFoundException;
 import com.softvision.library.tdd.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -52,5 +53,14 @@ public class BookServiceImpl implements BookService {
         repository.findById(id).ifPresentOrElse(book -> repository.deleteById(book.getId()), () -> {
             throw new RecordNotFoundException();
         });
+    }
+
+    @Override
+    public Page<Book> getContainingTitle(String titleInfix, Pageable pageable) {
+        Page<Book> result = repository.findByTitleContaining(titleInfix, pageable);
+        if (!result.hasContent()) {
+            throw new RecordNotFoundException();
+        }
+        return result;
     }
 }

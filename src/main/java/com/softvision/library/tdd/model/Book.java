@@ -1,6 +1,8 @@
 package com.softvision.library.tdd.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -14,8 +16,14 @@ public class Book extends BaseEntity{
 	private long id;
 	private String title;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
+	private String description;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "author_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JsonIdentityInfo(generator= ObjectIdGenerators.PropertyGenerator.class, property="id")
+	@JsonIdentityReference(alwaysAsId= true)
+	@JsonProperty("author_id")
 	private Author author;
 
 	public Book() {
@@ -48,5 +56,13 @@ public class Book extends BaseEntity{
 	}
 	public void setAuthor(Author author) {
 		this.author = author;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

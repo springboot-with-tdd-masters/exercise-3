@@ -22,7 +22,7 @@ public abstract class BaseEntity {
 
 	@LastModifiedBy
 	private String lastModifiedBy;
-	
+
 	@CreatedBy
 	private String createdBy;
 

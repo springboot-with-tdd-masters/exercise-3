@@ -1,8 +1,9 @@
 package com.softvision.library.tdd.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.softvision.library.tdd.model.Book;
+import com.softvision.library.tdd.model.Author;
 import com.softvision.library.tdd.model.RecordNotFoundException;
+import com.softvision.library.tdd.service.AuthorService;
 import com.softvision.library.tdd.service.BookService;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
@@ -18,16 +19,16 @@ import org.springframework.data.domain.*;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
+import static com.softvision.library.tdd.LibraryMocks.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.mockito.Mockito.*;
-import static com.softvision.library.tdd.LibraryMocks.*;
-
-import java.util.*;
 
 @AutoConfigureMockMvc
-@WebMvcTest(controllers = BookController.class)
-public class BookControllerTests {
+@WebMvcTest(controllers = AuthorController.class)
+public class AuthorControllerTests {
 
     @Autowired
     MockMvc mockMvc;
@@ -35,38 +36,40 @@ public class BookControllerTests {
     ArgumentCaptor<Pageable> pageableCaptor;
 
     @MockBean
+    AuthorService authorService;
+    @MockBean
     BookService bookService;
 
     static final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
-    @DisplayName("Given a successful getAll, response should give http status 200 with the list.")
+    @DisplayName("Given a successful getAll, response should give HTTP status 200 with the list.")
     void test_getAll_success() throws Exception {
-        when(bookService.getAll(Pageable.ofSize(2)))
-                .thenReturn(createMockPage(List.of(getMockBook1(), getMockBook2())));
+        when(authorService.getAll(Pageable.ofSize(2)))
+                .thenReturn(createMockPage(List.of(getMockAuthor1(), getMockAuthor2())));
 
-        mockMvc.perform(get("/books?size=2"))
+        mockMvc.perform(get("/authors?size=2"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].title", Matchers.is(MOCK_TITLE_AOW)))
-                .andExpect(jsonPath("$.content[1].title", Matchers.is(MOCK_TITLE_TP)));
+                .andExpect(jsonPath("$.content[0].name", Matchers.is(MOCK_AUTHOR_ST)))
+                .andExpect(jsonPath("$.content[1].name", Matchers.is(MOCK_AUTHOR_NM)));
 
-        verify(bookService, atMostOnce()).getAll(any());
+        verify(authorService, atMostOnce()).getAll(any());
     }
 
     @Test
     @DisplayName("Given paging and sorting request params, response should be sorted and paged correspondingly.")
     void test_getAll_success_withPagination() throws Exception {
 
-        when(bookService.getAll(pageableCaptor.capture()))
-                .thenReturn(createMockPage(List.of(getMockBook1(), getMockBook2())));
+        when(authorService.getAll(pageableCaptor.capture()))
+                .thenReturn(createMockPage(List.of(getMockAuthor1(), getMockAuthor2())));
 
-        mockMvc.perform(get("/books")
-                    .param("page", "1")
-                    .param("size", "2")
-                    .param("sort", "id,asc")
-                    .param("sort", "name,desc"))
-                .andExpect(jsonPath("$.content[0].title", Matchers.is(MOCK_TITLE_AOW)))
-                .andExpect(jsonPath("$.content[1].title", Matchers.is(MOCK_TITLE_TP)))
+        mockMvc.perform(get("/authors")
+                        .param("page", "1")
+                        .param("size", "2")
+                        .param("sort", "id,asc")
+                        .param("sort", "name,desc"))
+                .andExpect(jsonPath("$.content[0].name", Matchers.is(MOCK_AUTHOR_ST)))
+                .andExpect(jsonPath("$.content[1].name", Matchers.is(MOCK_AUTHOR_NM)))
                 .andExpect(status().isOk());
 
         PageRequest pageable = (PageRequest) pageableCaptor.getValue();
@@ -83,22 +86,21 @@ public class BookControllerTests {
                         Sort.Order.asc("id"),
                         Sort.Order.desc("name")));
 
-        verify(bookService, atMostOnce()).getAll(any());
+        verify(authorService, atMostOnce()).getAll(any());
     }
 
     @Test
-    @DisplayName("Given title as query param, response should only have book name containing 'The'.")
+    @DisplayName("Given name as query param, response should only have authors name containing 'Sun'.")
     void test_getAll_success_withPaginationAndTitle() throws Exception {
 
-        when(bookService.getContainingTitle(eq("The"), pageableCaptor.capture()))
-                .thenReturn(createMockPage(List.of(getMockBook1(), getMockBook2())));
+        when(authorService.getContainingName(eq("Sun"), pageableCaptor.capture()))
+                .thenReturn(createMockPage(List.of(getMockAuthor1(), getMockAuthor2())));
 
-        mockMvc.perform(get("/books")
+        mockMvc.perform(get("/authors")
                         .param("page", "1")
                         .param("size", "2")
-                        .param("title", "The"))
-                .andExpect(jsonPath("$.content[0].title", Matchers.is(MOCK_TITLE_AOW)))
-                .andExpect(jsonPath("$.content[1].title", Matchers.is(MOCK_TITLE_TP)))
+                        .param("name", "Sun"))
+                .andExpect(jsonPath("$.content[0].name", Matchers.is(MOCK_AUTHOR_ST)))
                 .andExpect(status().isOk());
 
         PageRequest pageable = (PageRequest) pageableCaptor.getValue();
@@ -110,49 +112,49 @@ public class BookControllerTests {
                 .extracting(AbstractPageRequest::getPageSize)
                 .isEqualTo(2);
 
-        verify(bookService, atMostOnce()).getContainingTitle(any(), any());
-    }
-
-    @Test
-    @DisplayName("Given a record not found from service getAll, response should give http status 404 (not found).")
-    void test_getAll_fail() throws Exception {
-        when(bookService.getAll(any())).thenThrow(RecordNotFoundException.class);
-
-        mockMvc.perform(get("/books")).andExpect(status().isNotFound());
-
-        verify(bookService, atMostOnce()).getAll(any());
+        verify(authorService, atMostOnce()).getContainingName(any(), any());
     }
 
     @Test
     @DisplayName("Given a successful result from createOrUpdate, response should give http status 201 (created).")
     void test_create() throws Exception {
-        Book book = getMockBook1();
-        when(bookService.createOrUpdate(argThat(b -> b.getTitle().equals(MOCK_TITLE_AOW))))
-                .thenReturn(book);
+        Author author = getMockAuthor1();
+        when(authorService.create(argThat(a -> a.getName().equals(MOCK_AUTHOR_ST))))
+                .thenReturn(author);
 
-        mockMvc.perform(post("/books").content(objectMapper.writeValueAsBytes(book))
+        mockMvc.perform(post("/authors").content(objectMapper.writeValueAsBytes(author))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("title", Matchers.is(MOCK_TITLE_AOW)));
+                .andExpect(jsonPath("name", Matchers.is(MOCK_AUTHOR_ST)));
 
-        verify(bookService, atMostOnce()).createOrUpdate(any());
+        verify(authorService, atMostOnce()).create(any());
     }
 
     @Test
     @DisplayName("Given a failure result from createOrUpdate, response should give http status 5xx (server error).")
     void test_create_fail() throws Exception {
-        Book book = getMockBook1();
-        when(bookService.createOrUpdate(argThat(b -> b.getTitle().equals(MOCK_TITLE_AOW))))
-                .thenThrow(new IllegalArgumentException());
+        Author author = getMockAuthor1();
+        when(authorService.create(argThat(a -> a.getName().equals(MOCK_AUTHOR_ST))))
+                .thenThrow(IllegalArgumentException.class);
 
-        mockMvc.perform(post("/books").content(objectMapper.writeValueAsBytes(book))
+        mockMvc.perform(post("/authors").content(objectMapper.writeValueAsBytes(author))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is5xxServerError());
 
-        verify(bookService, atMostOnce()).createOrUpdate(any());
+        verify(authorService, atMostOnce()).create(any());
     }
 
-    private Page<Book> createMockPage(List<Book> content) {
+    @Test
+    @DisplayName("Given a record not found from service getAll, response should give http status 404 (not found).")
+    void test_getAll_fail() throws Exception {
+        when(authorService.getAll(any())).thenThrow(RecordNotFoundException.class);
+
+        mockMvc.perform(get("/authors")).andExpect(status().isNotFound());
+
+        verify(authorService, atMostOnce()).getAll(any());
+    }
+
+    private Page<Author> createMockPage(List<Author> content) {
         return new PageImpl<>(content);
     }
 }

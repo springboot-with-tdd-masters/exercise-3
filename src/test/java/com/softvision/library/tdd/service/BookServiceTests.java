@@ -12,9 +12,12 @@ import org.mockito.Mock;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static com.softvision.library.tdd.LibraryMocks.*;
@@ -29,12 +32,14 @@ public class BookServiceTests {
     static final String[] PROPERTIES_TO_EXTRACT = {"title", "author.name"};
 
     @Mock
-    BookRepository bookRepository;
+    BookRepository mockBookRepository;
 
     @Mock
     Pageable mockPageable;
     @Mock
     Page<Book> mockBookPage;
+
+    static final String MOCK_TITLE_CONTAINS = "The";
 
     @InjectMocks
     BookService bookService = new BookServiceImpl();
@@ -44,14 +49,14 @@ public class BookServiceTests {
     void test_create() {
         final Book book = getMockBook2();
         book.setAuthor(getMockAuthor2());
-        when(bookRepository.save(book)).thenReturn(book);
+        when(mockBookRepository.save(book)).thenReturn(book);
 
         assertThat(bookService.createOrUpdate(book))
                 .extracting(PROPERTIES_TO_EXTRACT)
-                .containsExactly(MOCK_TITLE_2, MOCK_AUTHOR_2);
+                .containsExactly(MOCK_TITLE_TP, MOCK_AUTHOR_NM);
 
-        verify(bookRepository, atMostOnce()).findById(anyLong());
-        verify(bookRepository, atMostOnce()).save(any());
+        verify(mockBookRepository, atMostOnce()).findById(anyLong());
+        verify(mockBookRepository, atMostOnce()).save(any());
     }
 
     @Test
@@ -64,70 +69,90 @@ public class BookServiceTests {
         fixedBook.setId(MOCK_BOOK_ID_1);
         fixedBook.setAuthor(getMockAuthor1());
 
-        when(bookRepository.findById(MOCK_BOOK_ID_1)).thenReturn(Optional.of(savedBookWithTypo));
-        when(bookRepository.save(argThat(b -> b.getId() == MOCK_BOOK_ID_1))).thenReturn(fixedBook);
+        when(mockBookRepository.findById(MOCK_BOOK_ID_1)).thenReturn(Optional.of(savedBookWithTypo));
+        when(mockBookRepository.save(argThat(b -> b.getId() == MOCK_BOOK_ID_1))).thenReturn(fixedBook);
 
         Book actualBook = bookService.createOrUpdate(fixedBook);
         assertThat(actualBook)
                 .extracting(PROPERTIES_TO_EXTRACT)
-                .containsExactly(MOCK_TITLE_1, MOCK_AUTHOR_1);
+                .containsExactly(MOCK_TITLE_AOW, MOCK_AUTHOR_ST);
 
-        verify(bookRepository, atMostOnce()).findById(anyLong());
-        verify(bookRepository, atMostOnce()).save(any());
+        verify(mockBookRepository, atMostOnce()).findById(anyLong());
+        verify(mockBookRepository, atMostOnce()).save(any());
     }
 
     @Test
     @DisplayName("Get All - should get a list of books")
     void test_getAll() {
-        when(bookRepository.findAll()).thenReturn(Arrays.asList(getMockBook1(), getMockBook2()));
+        when(mockBookRepository.findAll()).thenReturn(Arrays.asList(getMockBook1(), getMockBook2()));
 
         assertThat(bookService.getAll())
                 .extracting(Book::getTitle)
-                .containsExactly(MOCK_TITLE_1, MOCK_TITLE_2);
+                .containsExactly(MOCK_TITLE_AOW, MOCK_TITLE_TP);
 
-        verify(bookRepository, atMostOnce()).findAll();
+        verify(mockBookRepository, atMostOnce()).findAll();
     }
 
     @Test
     @DisplayName("Get By ID - should get a list of books")
     void test_getById() {
-        when(bookRepository.findById(1L)).thenReturn(Optional.of(getMockBook1()));
+        when(mockBookRepository.findById(1L)).thenReturn(Optional.of(getMockBook1()));
 
         assertThat(bookService.getById(1L))
                 .extracting(Book::getTitle)
-                .isEqualTo(MOCK_TITLE_1);
+                .isEqualTo(MOCK_TITLE_AOW);
 
-        verify(bookRepository, atMostOnce()).findById(anyLong());
+        verify(mockBookRepository, atMostOnce()).findById(anyLong());
     }
 
     @Test
     @DisplayName("Get By ID - should get a list of books")
     void test_getById_notFound() {
-        when(bookRepository.findById(1L)).thenReturn(Optional.empty());
+        when(mockBookRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(RecordNotFoundException.class, () -> bookService.getById(1L));
 
-        verify(bookRepository, atMostOnce()).findById(anyLong());
+        verify(mockBookRepository, atMostOnce()).findById(anyLong());
     }
 
     @Test
-    @DisplayName("Get All - should get a page of books")
+    @DisplayName("Get All (paged) - should get a page of books")
     void test_getAll_paged() {
-        when(bookRepository.findAll(mockPageable)).thenReturn(mockBookPage);
+        when(mockBookRepository.findAll(mockPageable)).thenReturn(mockBookPage);
 
         assertSame(mockBookPage, bookService.getAll(mockPageable));
 
-        verify(bookRepository, atMostOnce()).findAll();
+        verify(mockBookRepository, atMostOnce()).findAll();
     }
 
     @Test
-    @DisplayName("Get All - should get a page of books by author")
+    @DisplayName("Get All - should get a page of books by the author ID")
     void test_getAllByAuthors_paged() {
-        when(bookRepository.findByAuthorId(1L, mockPageable)).thenReturn(mockBookPage);
+        when(mockBookRepository.findByAuthorId(1L, mockPageable)).thenReturn(mockBookPage);
 
         assertSame(mockBookPage, bookService.getAllByAuthor(1L, mockPageable));
 
-        verify(bookRepository, atMostOnce()).findAll();
+        verify(mockBookRepository, atMostOnce()).findAll();
+    }
+
+    @Test
+    @DisplayName("Get Contains - should return books with title 'The'")
+    void test_getContains() {
+        List<Book> mockPageContent = List.of(getMockBook1());
+        when(mockBookRepository.findByTitleContaining(MOCK_TITLE_CONTAINS, mockPageable)).thenReturn(new PageImpl<>(mockPageContent));
+        Page<Book> actualBookPage = bookService.getContainingTitle(MOCK_TITLE_CONTAINS, mockPageable);
+        assertEquals(mockPageContent, actualBookPage.getContent());
+
+        verify(mockBookRepository, atMostOnce()).findByTitleContaining(any(), any());
+    }
+
+    @Test
+    @DisplayName("Get Contains - should throw RecordNotFoundException when repository returns empty")
+    void test_getContains_throwExceptionWhenEmpty() {
+        when(mockBookRepository.findByTitleContaining(MOCK_TITLE_CONTAINS, mockPageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
+        assertThrows(RecordNotFoundException.class, () -> bookService.getContainingTitle(MOCK_TITLE_CONTAINS, mockPageable));
+
+        verify(mockBookRepository, atMostOnce()).findByTitleContaining(any(), any());
     }
 
 }

@@ -36,7 +36,7 @@ public class LibraryExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler
     public final ResponseEntity<LibraryError> handleRecordNotFoundException(RecordNotFoundException ex,
                                                                             WebRequest request) {
-        return new ResponseEntity<>(new LibraryError("Record Not Found.",
+        return new ResponseEntity<>(new LibraryError("Record(s) Not Found.",
                     HttpStatus.NOT_FOUND.value(),
                     new Date(),
                     urlPathHelper.getPathWithinApplication(((ServletWebRequest)request).getRequest())),

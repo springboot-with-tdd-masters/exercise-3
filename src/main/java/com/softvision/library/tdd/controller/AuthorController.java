@@ -7,14 +7,14 @@ import com.softvision.library.tdd.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 @RequestMapping("/authors")
 public class AuthorController {
 
@@ -28,9 +28,16 @@ public class AuthorController {
         return new ResponseEntity<>(authorService.create(author), new HttpHeaders(), HttpStatus.CREATED);
     }
 
-    @GetMapping
     public ResponseEntity<Page<Author>> getAll(@PageableDefault Pageable page) {
         return new ResponseEntity<>(authorService.getAll(page), new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<Author>> getContainingName(@Param("name") String name, @PageableDefault Pageable page) {
+        if (name == null) {
+            return getAll(page);
+        }
+        return new ResponseEntity<>(authorService.getContainingName(name, page), new HttpHeaders(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

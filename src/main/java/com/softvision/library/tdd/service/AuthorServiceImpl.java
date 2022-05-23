@@ -7,8 +7,11 @@ import com.softvision.library.tdd.repository.AuthorRepository;
 import com.softvision.library.tdd.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class AuthorServiceImpl implements AuthorService {
@@ -44,5 +47,14 @@ public class AuthorServiceImpl implements AuthorService {
         authorRepository.findById(id).ifPresentOrElse(author -> authorRepository.deleteById(author.getId()), () -> {
             throw new RecordNotFoundException();
         });
+    }
+
+    @Override
+    public Page<Author> getContainingName(String nameInfix, Pageable pageable) {
+        Page<Author> result = authorRepository.findByNameContaining(nameInfix, pageable);
+        if (!result.hasContent()) {
+            throw new RecordNotFoundException();
+        }
+        return result;
     }
 }

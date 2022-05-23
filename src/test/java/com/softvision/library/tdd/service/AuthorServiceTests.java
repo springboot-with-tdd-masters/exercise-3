@@ -12,11 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,6 +38,8 @@ public class AuthorServiceTests {
     Author mockAuthorExpected;
     @Mock
     Book mockBook;
+
+    static final String MOCK_CONTAINS = "Sun";
 
     @InjectMocks
     AuthorService authorService = new AuthorServiceImpl();
@@ -72,11 +73,31 @@ public class AuthorServiceTests {
 
     @Test
     @DisplayName("Get By Id - should throw RecordNotFoundException when id is not found")
-    void test_getById_throwException() {
+    void test_getById_throwExceptionWhenEmpty() {
         when(mockAuthorRepository.findById(1L)).thenReturn(Optional.empty());
         assertThrows(RecordNotFoundException.class, () -> authorService.getById(1L));
 
         verify(mockAuthorRepository, atMostOnce()).findById(anyLong());
+    }
+
+    @Test
+    @DisplayName("Get Contains - should return authors with name 'Sun'")
+    void test_getContains() {
+        List<Author> mockPageContent = List.of(mockAuthorExpected);
+        when(mockAuthorRepository.findByNameContaining(MOCK_CONTAINS, mockPageable)).thenReturn(new PageImpl<>(mockPageContent));
+        Page<Author> actualAuthorPage = authorService.getContainingName(MOCK_CONTAINS, mockPageable);
+        assertEquals(mockPageContent, actualAuthorPage.getContent());
+
+        verify(mockAuthorRepository, atMostOnce()).findByNameContaining(any(), any());
+    }
+
+    @Test
+    @DisplayName("Get Contains - should throw RecordNotFoundException when repository returns empty")
+    void test_getContains_throwExceptionWhenEmpty() {
+        when(mockAuthorRepository.findByNameContaining(MOCK_CONTAINS, mockPageable)).thenReturn(new PageImpl<>(Collections.emptyList()));
+        assertThrows(RecordNotFoundException.class, () -> authorService.getContainingName(MOCK_CONTAINS, mockPageable));
+
+        verify(mockAuthorRepository, atMostOnce()).findByNameContaining(any(), any());
     }
 
     @Test

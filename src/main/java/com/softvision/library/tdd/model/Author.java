@@ -1,5 +1,6 @@
 package com.softvision.library.tdd.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -7,6 +8,7 @@ import java.util.Set;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Author extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
