@@ -99,10 +99,14 @@ public class AuthorRepositoryTest {
 	     
 	    Author author3 = new Author();
 	    author3.setName("George Orwell");
+	    
+	    Author author4 = new Author();
+	    author4.setName("William Shakespeare");
 	    	     
 	    authorRepository.save(author1);	
 	    authorRepository.save(author2);	
 	    authorRepository.save(author3);	
+	    authorRepository.save(author4);
 	     
 	 	int page = 0;
 		int size = 3;
@@ -113,11 +117,12 @@ public class AuthorRepositoryTest {
 	    Page<Author> pagedAuthors = authorRepository.findAll(pageable);
 	    
 	 	assertAll(
-			    () -> assertEquals(1, pagedAuthors.getTotalPages()),
-			    () -> assertEquals(3, pagedAuthors.getNumberOfElements()),
-			    () -> assertEquals("J. R. R. Tolkien", pagedAuthors.getContent().get(0).getName()),			    
-			    () -> assertEquals("J. K. Rowling", pagedAuthors.getContent().get(1).getName()),
-			    () -> assertEquals("George Orwell", pagedAuthors.getContent().get(2).getName())			   
-	 		);		
+	 		() -> assertEquals(2, pagedAuthors.getTotalPages()),
+			() -> assertEquals(4, pagedAuthors.getTotalElements()),
+			() -> assertEquals(3, pagedAuthors.getNumberOfElements()),
+			() -> assertEquals("William Shakespeare", pagedAuthors.getContent().get(0).getName()),			   
+			() -> assertEquals("J. R. R. Tolkien", pagedAuthors.getContent().get(1).getName()),			    
+			() -> assertEquals("J. K. Rowling", pagedAuthors.getContent().get(2).getName())
+	 	);		
 	}	
 }

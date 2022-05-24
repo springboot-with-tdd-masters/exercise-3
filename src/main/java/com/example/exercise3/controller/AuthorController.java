@@ -1,47 +1,50 @@
 package com.example.exercise3.controller;
 
-import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.exercise3.model.Book;
-import com.example.exercise3.service.AuthorServiceImpl;
+import com.example.exercise3.model.dto.AuthorDto;
+import com.example.exercise3.service.AuthorService;
 
 @RestController
 @RequestMapping("/authors") 
 public class AuthorController {
 	
 	@Autowired
-	private AuthorServiceImpl authorService;
+	private AuthorService authorService;
 	
 	@PostMapping
-	public Book addAuthor(@RequestBody Book book) {
-		return authorService.addBook(book);
-	}
-	
-	@GetMapping public List<Book> getBooks() {
-		return authorService.getAllBooks(); 
+	public AuthorDto createAuthor(@RequestBody Map<String, String> request) {
+		return authorService.createAuthor(request.get("name"));
 	}
 	
 	@GetMapping("/{id}")
-	public Book getBook(@PathVariable long id) {
-		return authorService.getBookById(id);
+	public AuthorDto getAuthor(@PathVariable Long id) {
+		return authorService.getAuthor(id);
 	}
 	
-	@PostMapping("/update")
-	public Book updateBook(@RequestBody Book book) {
-		return authorService.updateBook(book);
-	}
-	
-	@DeleteMapping("/delete/{id}")
-	public void deleteBook(@PathVariable Long id) {
-		authorService.deleteBook(id);
+	@GetMapping
+	public Page<AuthorDto> getAuthors(@RequestParam Map<String, String> params) {
+		int page = Integer.valueOf(params.get("page"));
+		int size = Integer.valueOf(params.get("size"));
+		String[] sort = params.get("sort").split(",");
+		
+		Sort.Direction direction = Sort.Direction.fromString(sort[1]);
+		
+		Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort[0]));
+		return authorService.findAll(pageable);
 	}
 }

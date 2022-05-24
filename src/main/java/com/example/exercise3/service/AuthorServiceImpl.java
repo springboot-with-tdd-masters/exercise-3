@@ -49,28 +49,4 @@ public class AuthorServiceImpl implements AuthorService{
 		return authorRepository.findAll(pageable).map(AuthorDto::convertToDto);
 	}
 	
-	public List<Book> getAllBooks() { 
-		return bookRepository.findAll(); 
-	}
-	
-	public Book getBookById(Long id) {
-		return bookRepository.findById(id)
-				.orElseThrow(BookNotFoundException::new);
-	}
-	
-	public Book addBook(Book book) {
-		return bookRepository.save(book);
-	}
-	
-	public Book updateBook(Book book) {
-		Book toUpdate = getBookById(book.getId());
-		toUpdate.setTitle(book.getTitle());
-		toUpdate.setAuthor(book.getAuthor());
-		return bookRepository.save(toUpdate);
-	}
-	
-	public void deleteBook(Long id) {
-		Book toDelete = getBookById(id);
-		bookRepository.delete(toDelete);
-	}
 }
