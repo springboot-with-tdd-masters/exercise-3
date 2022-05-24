@@ -208,7 +208,8 @@ public class AuthorControllerTest {
         // Act
         mockMvc.perform(delete("/api/rest/authors/1")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(200));
+                .andExpect(status().is(200))
+                .andExpect(content().string("Author successfully deleted"));
 
         // Assert
         verify(authorService)

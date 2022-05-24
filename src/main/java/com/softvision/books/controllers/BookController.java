@@ -2,15 +2,17 @@ package com.softvision.books.controllers;
 
 import com.softvision.books.services.BookService;
 import com.softvision.books.services.domain.Book;
+import com.softvision.books.services.domain.BookFilter;
 import com.softvision.books.services.domain.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
-@RequestMapping("/api/rest/authors/{authorId}/books")
+@RequestMapping("/api/rest/books")
 public class BookController {
 
     private BookService bookService;
@@ -21,42 +23,32 @@ public class BookController {
     }
 
     @GetMapping
-    public Pagination<Book> getAll(@PathVariable("authorId") Long authorId, Pageable pageable) {
-        return bookService.findAll(authorId, pageable);
+    public Pagination<Book> search(@RequestParam String title,
+                                   @RequestParam(defaultValue = "0") Integer page,
+                                   @RequestParam(defaultValue = "10") Integer size,
+                                   @RequestParam(required = false) String[] sort) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+
+        if (Objects.nonNull(sort)) {
+            pageRequest = PageRequest.of(page, size, buildSortFrom(sort));
+        }
+
+        final BookFilter bookFilter = BookFilter.of(title);
+
+        return bookService.findAll(bookFilter, pageRequest);
     }
 
-    @GetMapping("{id:\\d+}")
-    public ResponseEntity<Book> get(@PathVariable Long id) {
+    private Sort buildSortFrom(String[] sortRequest) {
 
-        final Book book = bookService.findById(id);
+        if (sortRequest.length < 2) {
+            return Sort.unsorted();
+        }
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(book);
+        final String sortProperty = sortRequest[0];
+        final String direction = sortRequest[1];
+
+        return Sort.by(Sort.Direction.fromString(direction), sortProperty);
     }
 
-    @PostMapping
-    public ResponseEntity<Book> create(@PathVariable("authorId") Long authorId, @RequestBody Book book) {
-
-        final Book savedBook = bookService.add(authorId, book);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(savedBook);
-    }
-
-    @PutMapping("{id:\\d+}")
-    public ResponseEntity<Book> update(@PathVariable Long id, @RequestBody Book book) {
-
-        final Book savedBook = bookService.update(id, book);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(savedBook);
-    }
-
-    @DeleteMapping("{id:\\d+}")
-    public void delete(@PathVariable Long id) {
-        bookService.deleteById(id);
-    }
 }

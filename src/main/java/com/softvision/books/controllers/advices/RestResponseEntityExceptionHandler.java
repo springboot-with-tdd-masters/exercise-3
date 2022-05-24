@@ -1,6 +1,7 @@
 package com.softvision.books.controllers.advices;
 
 import com.softvision.books.exeptions.NotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,16 +13,17 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(RuntimeException.class)
     public final ResponseEntity<Object> handleUnknownError(RuntimeException runtimeException, WebRequest request) {
+        runtimeException.printStackTrace();
         return ResponseEntity
-                .internalServerError()
-                .build();
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Something went wrong on the server.");
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public final ResponseEntity<Object> handleNotFoundError(RuntimeException runtimeException, WebRequest request) {
+    public final ResponseEntity<Object> handleNotFoundError(NotFoundException notFoundException, WebRequest request) {
         return ResponseEntity
-                .notFound()
-                .build();
+                .status(HttpStatus.NOT_FOUND)
+                .body(notFoundException.getMessage());
     }
 
 }

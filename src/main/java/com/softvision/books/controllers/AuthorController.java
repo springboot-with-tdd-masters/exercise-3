@@ -56,7 +56,12 @@ public class AuthorController {
     }
 
     @DeleteMapping("{id:\\d+}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+
         authorService.deleteById(id);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Author successfully deleted");
     }
 }

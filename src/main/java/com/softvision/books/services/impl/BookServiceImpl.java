@@ -8,15 +8,13 @@ import com.softvision.books.repositories.entities.BookEntity;
 import com.softvision.books.services.BookService;
 import com.softvision.books.services.converters.BookConverter;
 import com.softvision.books.services.domain.Book;
+import com.softvision.books.services.domain.BookFilter;
 import com.softvision.books.services.domain.Pagination;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-
 @Service
-@Transactional
 public class BookServiceImpl implements BookService {
 
     private BookRepository bookRepository;
@@ -35,9 +33,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Pagination<Book> findAll(Long authorId, Pageable pageable) {
+    public Pagination<Book> findAll(BookFilter filter, Pageable pageable) {
 
-        final Page<BookEntity> bookEntityPage = bookRepository.findByAuthorId(authorId, pageable);
+        final Page<BookEntity> bookEntityPage;
+
+        if (filter.hasAuthor()) {
+            bookEntityPage =  bookRepository.findByAuthorId(filter.getAuthorId(), pageable);
+        } else if (filter.hasSearchKey()) {
+            bookEntityPage = bookRepository.findByTitleContainingIgnoreCase(filter.getSearchKey().trim().toLowerCase(), pageable);
+        } else {
+            bookEntityPage = bookRepository.findAll(pageable);
+        }
 
         return bookConverter.convert(bookEntityPage);
     }

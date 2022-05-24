@@ -3,7 +3,6 @@ package com.softvision.books.services.converters.impl;
 import com.softvision.books.repositories.entities.BookEntity;
 import com.softvision.books.services.converters.AuthorConverter;
 import com.softvision.books.services.converters.BookConverter;
-import com.softvision.books.services.domain.Author;
 import com.softvision.books.services.domain.Book;
 import com.softvision.books.services.domain.PageBean;
 import com.softvision.books.services.domain.Pagination;
@@ -12,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -31,7 +31,9 @@ public class BookConverterImpl implements BookConverter {
         bookEntity.setId(book.getId());
         bookEntity.setTitle(book.getTitle());
         bookEntity.setDescription(book.getDescription());
-        bookEntity.setAuthor(authorConverter.convert(book.getAuthor()));
+        if (Objects.nonNull(book.getAuthor())) {
+            bookEntity.setAuthor(authorConverter.convert(book.getAuthor()));
+        }
 
         return bookEntity;
     }
@@ -45,6 +47,8 @@ public class BookConverterImpl implements BookConverter {
         book.setTitle(bookEntity.getTitle());
         book.setDescription(bookEntity.getDescription());
         book.setAuthor(authorConverter.convert(bookEntity.getAuthor()));
+        book.setCreatedAt(String.valueOf(bookEntity.getCreatedDate()));
+        book.setUpdatedAt(String.valueOf(bookEntity.getLastModifiedDate()));
 
         return book;
     }

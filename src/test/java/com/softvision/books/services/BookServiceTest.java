@@ -6,10 +6,7 @@ import com.softvision.books.repositories.BookRepository;
 import com.softvision.books.repositories.entities.AuthorEntity;
 import com.softvision.books.repositories.entities.BookEntity;
 import com.softvision.books.services.converters.BookConverter;
-import com.softvision.books.services.domain.Author;
-import com.softvision.books.services.domain.Book;
-import com.softvision.books.services.domain.PageBean;
-import com.softvision.books.services.domain.Pagination;
+import com.softvision.books.services.domain.*;
 import com.softvision.books.services.impl.BookServiceImpl;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,6 +46,81 @@ public class BookServiceTest {
     }
 
     @Test
+    @DisplayName("findAll_shouldReturnAllBookEntities")
+    void findAll_shouldReturnAllBookEntities() {
+        // Arrange
+        Pageable pageRequest = Pageable.unpaged();
+        Page<BookEntity> page = mock(Page.class);
+
+        final List<Book> books = Arrays.asList(new Book("Some Title", "Description 1"));
+        final PageBean pageBean = new PageBean.Builder()
+                .page(0)
+                .maxPage(1)
+                .size(2)
+                .total(2L)
+                .build();
+
+        final Pagination<Book> expectedResult = Pagination.of(books, pageBean);
+
+        when(bookRepository.findAll(pageRequest))
+                .thenReturn(page);
+        when(bookConverter.convert(page))
+                .thenReturn(expectedResult);
+
+        // Act
+        final Pagination<Book> bookPagination = bookService.findAll(BookFilter.empty(), pageRequest);
+
+        // Assert
+        verify(bookRepository)
+                .findAll(pageRequest);
+        verify(bookConverter)
+                .convert(page);
+
+        assertThat(bookPagination)
+                .isNotNull();
+        assertThat(bookPagination)
+                .isEqualTo(expectedResult);
+    }
+
+    @Test
+    @DisplayName("findAll_shouldReturnAllBookEntitiesWithTitleContainingTheSearchKey")
+    void findAll_shouldReturnAllBookEntitiesWithTitleContainingTheSearchKey() {
+        // Arrange
+        Pageable pageRequest = Pageable.unpaged();
+        String searchKey = "Some Title";
+        Page<BookEntity> page = mock(Page.class);
+
+        final List<Book> books = Arrays.asList(new Book(searchKey, "Description 1"));
+        final PageBean pageBean = new PageBean.Builder()
+                .page(0)
+                .maxPage(1)
+                .size(2)
+                .total(2L)
+                .build();
+
+        final Pagination<Book> expectedResult = Pagination.of(books, pageBean);
+
+        when(bookRepository.findByTitleContainingIgnoreCase(searchKey.toLowerCase(), pageRequest))
+                .thenReturn(page);
+        when(bookConverter.convert(page))
+                .thenReturn(expectedResult);
+
+        // Act
+        final Pagination<Book> bookPagination = bookService.findAll(BookFilter.of(searchKey), pageRequest);
+
+        // Assert
+        verify(bookRepository)
+                .findByTitleContainingIgnoreCase(searchKey.toLowerCase(), pageRequest);
+        verify(bookConverter)
+                .convert(page);
+
+        assertThat(bookPagination)
+                .isNotNull();
+        assertThat(bookPagination)
+                .isEqualTo(expectedResult);
+    }
+
+    @Test
     @DisplayName("findAll_shouldReturnAllBookEntitiesAsBooksFromRepository")
     void findAll_shouldReturnAllBookEntitiesAsBooksFromRepository() {
 
@@ -72,7 +144,7 @@ public class BookServiceTest {
                 .thenReturn(expectedResult);
 
         // Act
-        final Pagination<Book> bookPagination = bookService.findAll(1L, pageable);
+        final Pagination<Book> bookPagination = bookService.findAll(BookFilter.of(1L), pageable);
 
         // Assert
         verify(bookRepository)

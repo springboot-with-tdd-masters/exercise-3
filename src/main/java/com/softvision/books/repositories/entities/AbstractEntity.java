@@ -2,11 +2,12 @@ package com.softvision.books.repositories.entities;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
 
-//@EntityListeners()
+@EntityListeners(AuditingEntityListener.class)
 @MappedSuperclass
 public class AbstractEntity {
 

@@ -1,12 +1,13 @@
 package com.softvision.books.services;
 
 import com.softvision.books.services.domain.Book;
+import com.softvision.books.services.domain.BookFilter;
 import com.softvision.books.services.domain.Pagination;
 import org.springframework.data.domain.Pageable;
 
 public interface BookService {
 
-    Pagination<Book> findAll(Long authorId, Pageable pageable);
+    Pagination<Book> findAll(BookFilter filter, Pageable pageable);
 
     Book findById(Long id);
 
