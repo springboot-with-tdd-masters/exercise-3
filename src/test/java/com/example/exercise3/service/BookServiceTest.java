@@ -74,19 +74,14 @@ public class BookServiceTest {
 		BookRequest request = new BookRequest("Harry Potter and the Sorcerer's Stone", "1st book");
 		
 		BookDto actualResponse = bookService.addBook(1L, request);
-		
-		BookDto expectedResponse = new BookDto();
-		expectedResponse.setTitle("Harry Potter and the Sorcerer's Stone");
-		expectedResponse.setDescription("1st book");
-		expectedResponse.setAuthorId(1L);
-		
+			
 		assertAll(
 			() -> assertNotNull(actualResponse.getCreatedDate()),
 	        () -> assertNotNull(actualResponse.getUpdatedDate()),	            
 			() -> assertNotNull(actualResponse.getId()),
-	        () -> assertEquals(expectedResponse.getTitle(), actualResponse.getTitle()),
-	        () -> assertEquals(expectedResponse.getDescription(), actualResponse.getDescription()),
-	        () -> assertEquals(expectedResponse.getAuthorId(), actualResponse.getAuthorId())
+	        () -> assertEquals("Harry Potter and the Sorcerer's Stone", actualResponse.getTitle()),
+	        () -> assertEquals("1st book", actualResponse.getDescription()),
+	        () -> assertEquals(1, actualResponse.getAuthorId())
 	    );		
 	}
 	

@@ -1,6 +1,5 @@
 package com.example.exercise3.controller;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,12 +24,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import com.example.exercise3.model.Author;
 import com.example.exercise3.model.dto.AuthorDto;
+import com.example.exercise3.model.dto.BookDto;
+import com.example.exercise3.model.dto.BookRequest;
 import com.example.exercise3.service.AuthorService;
+import com.example.exercise3.service.BookService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest
@@ -42,6 +42,9 @@ public class AuthorControllerTest {
 	 
 	@MockBean
 	private AuthorService authorService;
+	
+	@MockBean
+	private BookService bookService;
 
 	private ObjectMapper objectMapper = new ObjectMapper();
 	 
@@ -131,6 +134,75 @@ public class AuthorControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[0].updatedDate").exists());
 
 		verify(authorService).findAll(pageable);
+	}
+	
+	@Test
+	public void AddBook() throws Exception {
+		BookRequest request = new BookRequest("Harry Potter and the Sorcerer's Stone", "1st book");
+		
+		BookDto expectedResponse = new BookDto();
+		expectedResponse.setId(1L);
+		expectedResponse.setCreatedDate(new Date());
+		expectedResponse.setUpdatedDate(new Date());
+		expectedResponse.setTitle("Harry Potter and the Sorcerer's Stone");
+		expectedResponse.setDescription("1st book");
+		expectedResponse.setAuthorId(1L);
+		
+		when(bookService.addBook(1L, request))
+    		.thenReturn(expectedResponse);
+		
+		this.mockMvc
+			.perform(post("/authors/1/books")
+			.content(objectMapper.writeValueAsString(request))
+			.contentType(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("$.id").value("1"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.title").value("Harry Potter and the Sorcerer's Stone"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.description").value("1st book"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.authorId").value("1"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.createdDate").exists())
+			.andExpect(MockMvcResultMatchers.jsonPath("$.updatedDate").exists());
+
+		verify(bookService).addBook(1L, request);
+	}
+	
+	@Test
+	@DisplayName("Get all books by author with paging and sorting")
+	public void getBooksByAuthorWithPagingAndSorting() throws Exception {
+		BookDto book1 = new BookDto();
+		book1.setId(1L);
+		book1.setCreatedDate(new Date());
+		book1.setUpdatedDate(new Date());
+		book1.setTitle("Harry Potter and the Sorcerer's Stone");
+		book1.setDescription("1st book");
+		book1.setAuthorId(1L);
+		
+		BookDto book2 = new BookDto();
+		book2.setId(2L);
+		book2.setCreatedDate(new Date());
+		book2.setUpdatedDate(new Date());
+		book2.setTitle("Harry Potter and the Chamber of Secrets");
+		book2.setDescription("2nd book");
+		book2.setAuthorId(1L);
+		
+		
+		Pageable pageable = PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "createdDate"));
+
+		Page<BookDto> pagedAuthors = new PageImpl(Arrays.asList(book1, book2));
+		
+		when(bookService.getBooks(1L, pageable))
+	    	.thenReturn(pagedAuthors);
+		
+		this.mockMvc.perform(get("/authors/1/books?page=0&size=2&sort=createdDate,desc"))
+			.andExpect(status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[0].id").value("1"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[0].title").value("Harry Potter and the Sorcerer's Stone"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[0].description").value("1st book"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[1].id").value("2"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[1].title").value("Harry Potter and the Chamber of Secrets"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[1].description").value("2nd book"));
+		
+		verify(bookService).getBooks(1L, pageable);
 	}
 		
 	   
