@@ -3,7 +3,6 @@ package com.example.exercise3.service;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -135,5 +134,4 @@ public class AuthorServiceTest {
 			    () -> assertEquals("J. R. R. Tolkien", pagedAuthorList.getContent().get(1).getName())			    
 	        );		
 	}
-	
 }
