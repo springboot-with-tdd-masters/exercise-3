@@ -50,7 +50,7 @@ public class BookServiceImpl implements BookService {
 	}
 
 	public Page<BookDto> getBook(Long bookId, Long authorId, Pageable pageable) {
-		return bookRepository.findByIdAndAuthorId(bookId, bookId, pageable).map(BookDto::convertToDto);
+		return bookRepository.findByIdAndAuthorId(bookId, authorId, pageable).map(BookDto::convertToDto);
 	}
 
 }
