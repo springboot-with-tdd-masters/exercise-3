@@ -11,11 +11,11 @@ public class RestExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public final ResponseEntity<String> handleAllException(Exception e, WebRequest req) {
-		return new ResponseEntity<String>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<String>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	@ExceptionHandler(BookNotFoundException.class)
+	@ExceptionHandler(AuthorNotFoundException.class)
 	public final ResponseEntity<String> handleRecordNotFoundException(Exception e, WebRequest req) {
-		return new ResponseEntity<String>("Book Not Found", HttpStatus.NOT_FOUND);
+		return new ResponseEntity<String>("Author Not Found", HttpStatus.NOT_FOUND);
 	}
 }

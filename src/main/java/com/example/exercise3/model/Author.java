@@ -49,6 +49,7 @@ public class Author extends AuditableEntity {
 	
 	public void addBooks(Book... books) {
 		for(Book book : books) {
+			book.setAuthor(this);
 			getBooks().add(book);
 		}
 	}

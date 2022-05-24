@@ -1,12 +1,20 @@
 package com.example.exercise3.service;
 
+import javax.security.auth.login.AccountNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.exercise3.exception.AuthorNotFoundException;
+import com.example.exercise3.model.Author;
+import com.example.exercise3.model.Book;
+import com.example.exercise3.model.dto.AuthorDto;
 import com.example.exercise3.model.dto.BookDto;
+import com.example.exercise3.model.dto.BookRequest;
+import com.example.exercise3.repository.AuthorRepository;
 import com.example.exercise3.repository.BookRepository;
 
 @Service
@@ -14,6 +22,22 @@ public class BookServiceImpl implements BookService {
 	
 	@Autowired
 	private BookRepository bookRepository;
+	
+	@Autowired
+	private AuthorRepository authorRepository;
+	
+	public BookDto addBook(Long id, BookRequest request) {
+		Author author = authorRepository.findById(id).orElseThrow(AuthorNotFoundException::new);
+		
+		Book book = new Book();
+		book.setTitle(request.getTitle());
+		book.setDescription(request.getDescription());
+		book.setAuthor(author);
+
+		Book savedBook = bookRepository.save(book);
+		
+		return BookDto.convertToDto(savedBook);
+	}	
 
 	public Page<BookDto> getBooks(String title) {
 	 	Pageable pageable = PageRequest.of(0, 20);
@@ -27,5 +51,6 @@ public class BookServiceImpl implements BookService {
 
 	public Page<BookDto> getBook(Long bookId, Long authorId, Pageable pageable) {
 		return bookRepository.findByIdAndAuthorId(bookId, bookId, pageable).map(BookDto::convertToDto);
-	}	
+	}
+
 }

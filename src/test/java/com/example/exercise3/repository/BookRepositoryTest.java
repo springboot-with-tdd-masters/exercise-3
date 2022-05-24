@@ -3,8 +3,10 @@ package com.example.exercise3.repository;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,6 +20,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import com.example.exercise3.model.Author;
 import com.example.exercise3.model.Book;
+import com.example.exercise3.model.dto.BookDto;
+import com.example.exercise3.model.dto.BookRequest;
 
 @EnableJpaAuditing
 @DataJpaTest
@@ -28,6 +32,33 @@ public class BookRepositoryTest {
 
 	@Autowired
 	private BookRepository bookRepository;
+	
+	
+	@Test
+	@DisplayName("Create a book and add to author")
+	public void CreateBookAndaddToAuthor() {
+		Author newAuthor = new Author();
+		newAuthor.setId(1L);
+		
+		Author savedAuthor = authorRepository.save(newAuthor);
+
+		Book newBook = new Book();
+		newBook.setTitle("Harry Potter and the Sorcerer's Stone");
+		newBook.setDescription("1st book");
+		
+		savedAuthor.addBooks(newBook);
+		
+		Book actualResponse = bookRepository.save(newBook);
+		
+		assertAll(
+			() -> assertNotNull(actualResponse.getCreatedDate()),
+	        () -> assertNotNull(actualResponse.getUpdatedDate()),	            
+			() -> assertNotNull(actualResponse.getId()),
+	        () -> assertEquals(newBook.getTitle(), actualResponse.getTitle()),
+	        () -> assertEquals(newBook.getDescription(), actualResponse.getDescription()),
+	        () -> assertEquals(newBook.getAuthor().getId(), actualResponse.getAuthor().getId())
+	    );		
+	}
 	
 	@Test
 	@DisplayName("Get books with paging and sorting")

@@ -8,8 +8,10 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,6 +25,8 @@ import org.springframework.data.domain.Sort;
 import com.example.exercise3.model.Author;
 import com.example.exercise3.model.Book;
 import com.example.exercise3.model.dto.BookDto;
+import com.example.exercise3.model.dto.BookRequest;
+import com.example.exercise3.repository.AuthorRepository;
 import com.example.exercise3.repository.BookRepository;
 
 public class BookServiceTest {
@@ -30,12 +34,60 @@ public class BookServiceTest {
 	@Mock
 	private BookRepository bookRepository;
 	
+	@Mock
+	private AuthorRepository authorRepository;
+	
 	@InjectMocks
 	private BookServiceImpl bookService;
 	
 	@BeforeEach
 	public void setUp() {
 		MockitoAnnotations.openMocks(this);
+	}
+	
+	@Test
+	@DisplayName("Create a book and add to author")
+	public void CreateBookAndaddToAuthor() {
+		Author author = new Author();
+		author.setId(1L);
+		
+		when(authorRepository.findById(1L))
+			.thenReturn(Optional.of(author));
+		
+		Book savedBook = new Book();
+		savedBook.setId(1L);
+		savedBook.setTitle("Harry Potter and the Sorcerer's Stone");
+		savedBook.setDescription("1st book");
+		savedBook.setCreatedDate(new Date());
+		savedBook.setUpdatedDate(new Date());
+		author.addBooks(savedBook);
+
+		Book newBook = new Book();
+		newBook.setTitle("Harry Potter and the Sorcerer's Stone");
+		newBook.setDescription("1st book");
+
+		author.addBooks(newBook);
+
+		when(bookRepository.save(newBook))
+			.thenReturn(savedBook);
+	
+		BookRequest request = new BookRequest("Harry Potter and the Sorcerer's Stone", "1st book");
+		
+		BookDto actualResponse = bookService.addBook(1L, request);
+		
+		BookDto expectedResponse = new BookDto();
+		expectedResponse.setTitle("Harry Potter and the Sorcerer's Stone");
+		expectedResponse.setDescription("1st book");
+		expectedResponse.setAuthorId(1L);
+		
+		assertAll(
+			() -> assertNotNull(actualResponse.getCreatedDate()),
+	        () -> assertNotNull(actualResponse.getUpdatedDate()),	            
+			() -> assertNotNull(actualResponse.getId()),
+	        () -> assertEquals(expectedResponse.getTitle(), actualResponse.getTitle()),
+	        () -> assertEquals(expectedResponse.getDescription(), actualResponse.getDescription()),
+	        () -> assertEquals(expectedResponse.getAuthorId(), actualResponse.getAuthorId())
+	    );		
 	}
 	
 	@Test
