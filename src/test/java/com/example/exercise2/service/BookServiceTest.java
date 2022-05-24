@@ -10,9 +10,11 @@ import com.example.exercise2.repository.BookRepository;
 import com.example.exercise2.repository.entity.BookEntity;
 import com.example.exercise2.service.adapters.BookEntityToBookAdapter;
 import com.example.exercise2.service.adapters.BookToBookEntityAdapter;
+import com.example.exercise2.service.model.Author;
 import com.example.exercise2.service.model.Book;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,7 +49,7 @@ public class BookServiceTest {
     //setup
     Book book = new Book();
     book.setTitle("BOOK1");
-    book.setAuthor("AUTHOR1");
+    book.setAuthor(new Author(1L, "Mr Clean"));
 
     BookEntity mockedBookEntityFromBookDomain = mock(BookEntity.class);
     when(bookToBookEntityAdapter.convert(book))
@@ -73,7 +75,7 @@ public class BookServiceTest {
   }
 
   @Test
-  @DisplayName("List all books")
+  @DisplayName("List all books without pagination and sort")
   void displayAllbooks() {
 
     List<BookEntity> bookEntityList = new ArrayList<>();
@@ -92,4 +94,27 @@ public class BookServiceTest {
 
     assertThat(actualBookListResult).isEqualTo(spyMappedBookList);
   }
+
+
+  @Test
+  @DisplayName("Get book details using author id")
+  void should_display_book_details_given_book_id() {
+
+    Book expectedBook = new Book();
+    expectedBook.setTitle("BOOK1");
+    expectedBook.setDescription("BOOK1 DESC");
+    expectedBook.setAuthor(new Author(1L, "Mr Clean"));
+
+    BookEntity mockedBookEntityFromRepo = mock(BookEntity.class);
+    when(bookRepository.findById(1L)).thenReturn(Optional.ofNullable(mockedBookEntityFromRepo));
+    when(bookEntityToBookAdapter.convert(mockedBookEntityFromRepo)).thenReturn(expectedBook);
+
+    Book actualBook = bookService.findById(1L);
+
+    verify(bookRepository).findById(1L);
+    verify(bookEntityToBookAdapter).convert(mockedBookEntityFromRepo);
+
+    assertThat(actualBook).isEqualTo(expectedBook);
+  }
+
 }
