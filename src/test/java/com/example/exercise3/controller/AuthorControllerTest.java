@@ -204,6 +204,34 @@ public class AuthorControllerTest {
 		
 		verify(bookService).getBooks(1L, pageable);
 	}
-		
-	   
+	
+	@Test
+	@DisplayName("Get book by id")
+	public void getBookById() throws Exception {
+	    BookDto book = new BookDto();
+	    book.setId(1L);
+	    book.setTitle("Harry Potter and the Sorcerer's Stone");
+	    book.setDescription("1st book");
+	    book.setCreatedDate(new Date());
+	    book.setUpdatedDate(new Date());
+	    book.setAuthorId(1L);
+	     
+		Page<BookDto> pagedBook = new PageImpl(Arrays.asList(book));
+
+		Pageable pageable = PageRequest.of(0, 1);
+
+		when(bookService.getBook(1L, 1L, pageable))
+			.thenReturn(pagedBook);
+	
+		this.mockMvc.perform(get("/authors/1/books/1"))
+			.andExpect(status().isOk())
+			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[0].id").value("1"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[0].title").value("Harry Potter and the Sorcerer's Stone"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[0].description").value("1st book"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[0].authorId").value("1"))
+			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[0].createdDate").exists())
+			.andExpect(MockMvcResultMatchers.jsonPath("$.content.[0].updatedDate").exists());
+
+		verify(bookService).getBook(1L, 1L, pageable);
+	}		  
 }

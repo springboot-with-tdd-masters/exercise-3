@@ -70,4 +70,10 @@ public class AuthorController {
 		
 		return bookService.getBooks(authorId, pageable);
 	}
+	
+	@GetMapping("{authorId}/books/{bookId}")
+	public Page<BookDto> getBookById(@PathVariable Long authorId, @PathVariable Long bookId) {
+		Pageable pageable = PageRequest.of(0, 1);
+		return bookService.getBook(bookId, authorId, pageable);
+	}
 }

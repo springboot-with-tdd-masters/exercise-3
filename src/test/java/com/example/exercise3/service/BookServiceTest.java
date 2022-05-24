@@ -115,7 +115,7 @@ public class BookServiceTest {
 	}
 	
 	@Test
-	public void getBookWithCorrectDetails() {
+	public void getBookById() {
 		Author newAuthor = new Author();
 	    newAuthor.setName("J. K. Rowling");
 	     
@@ -127,7 +127,7 @@ public class BookServiceTest {
 	     
 		Page<Book> books = new PageImpl(Arrays.asList(book1));
 
-		Pageable pageable = PageRequest.of(0, 20);
+		Pageable pageable = PageRequest.of(0, 1);
 
 		when(bookRepository.findByIdAndAuthorId(1L, 1L, pageable))
 			.thenReturn(books);
