@@ -13,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -77,7 +80,8 @@ public class AuthorControllerTest {
         Author response2 = new Author();
         response2.setName("name2");
         response2.setId(Long.parseLong("2"));
-        when(authorService.findAllAuthors()).thenReturn(new PageImpl<>(List.of(response,response2)));
+        Pageable pageable = PageRequest.of(0,5, Sort.by("title").ascending());
+        when(authorService.findAllAuthors(pageable)).thenReturn(new PageImpl<>(List.of(response,response2)));
         mockMvc.perform(MockMvcRequestBuilders.get("/authors")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

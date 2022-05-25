@@ -21,18 +21,7 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @PostMapping
-    public BookDtoResponse saveOrUpdateBook(@RequestBody BookDtoRequest book){
-        BookDtoResponse response = bookService.save(book);
-        return response;
-    }
 
-    @GetMapping
-    public ResponseEntity<Page<BookEntity>> getAllBooks(){
-        Page<BookEntity> list = bookService.findAllBooks();
-
-        return new ResponseEntity<Page<BookEntity>>(list, new HttpHeaders(), HttpStatus.OK);
-    }
 
 
 }

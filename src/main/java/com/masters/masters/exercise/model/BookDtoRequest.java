@@ -2,15 +2,15 @@ package com.masters.masters.exercise.model;
 
 public class BookDtoRequest {
 
-    private String author;
+    private String description;
     private String title;
 
-    public String getAuthor() {
-        return author;
+    public String getDescription() {
+        return description;
     }
 
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getTitle() {

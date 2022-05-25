@@ -1,10 +1,7 @@
 package com.masters.masters.exercise.controller;
 
 import com.masters.masters.exercise.exception.RecordNotFoundException;
-import com.masters.masters.exercise.model.Author;
-import com.masters.masters.exercise.model.AuthorDtoRequest;
-import com.masters.masters.exercise.model.BookDtoRequest;
-import com.masters.masters.exercise.model.BookDtoResponse;
+import com.masters.masters.exercise.model.*;
 import com.masters.masters.exercise.services.AuthorService;
 import com.masters.masters.exercise.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +18,9 @@ public class AuthorController {
 
     @Autowired
     private AuthorService authorService;
+
+    @Autowired
+    private BookService bookService;
 
     @PostMapping
     public ResponseEntity<Author> saveAuthor(@RequestBody AuthorDtoRequest request){
@@ -39,4 +39,18 @@ public class AuthorController {
         Page<Author>list = authorService.findAllAuthors(pageRequest);
         return new ResponseEntity<Page<Author>>(list, new HttpHeaders(), HttpStatus.OK);
     }
+
+    @PostMapping("{id}/books")
+    public ResponseEntity<BookEntity> saveOrUpdateBook(@RequestBody BookDtoRequest book,@PathVariable Long id) throws RecordNotFoundException {
+        BookEntity response = bookService.save(book,id);
+        return new ResponseEntity<BookEntity>(response, new HttpHeaders(), HttpStatus.OK);
+    }
+
+    @GetMapping("{id}/books")
+    public ResponseEntity<Page<BookEntity>> getAllBooks(Pageable pageRequest){
+        Page<BookEntity> list = bookService.findAllBooks(pageRequest);
+
+        return new ResponseEntity<Page<BookEntity>>(list, new HttpHeaders(), HttpStatus.OK);
+    }
+
 }

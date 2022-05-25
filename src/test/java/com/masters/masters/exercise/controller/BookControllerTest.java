@@ -15,6 +15,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -38,24 +40,6 @@ public class BookControllerTest {
     @MockBean
     private AuthorService authorService;
 
-    @Test
-    public void saveBookHappyPath() throws Exception {
-        BookDtoRequest request = new BookDtoRequest();
-        request.setAuthor("author1");
-        request.setTitle("title1");
-        BookDtoResponse response = new BookDtoResponse();
-        response.setAuthor("author1");
-        response.setTitle("title1");
-        when(bookService.save(Mockito.any(BookDtoRequest.class))).thenReturn(response);
-        mockMvc.perform(MockMvcRequestBuilders.post("/book")
-                .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.author").value("author1"))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.title").value("title1"));
-
-    }
 
     @Test
     public void getAllBooksHappyPath() throws Exception {
@@ -63,7 +47,8 @@ public class BookControllerTest {
         book1.setTitle("title1");
         BookEntity book2 = new BookEntity();
         book2.setTitle("title2");
-        when(bookService.findAllBooks()).thenReturn(new PageImpl<>(List.of(book1,book2)));
+        Pageable pageable = PageRequest.of(0,5, Sort.by("title").ascending());
+        when(bookService.findAllBooks(pageable)).thenReturn(new PageImpl<>(List.of(book1,book2)));
         mockMvc.perform(MockMvcRequestBuilders.get("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -74,7 +59,8 @@ public class BookControllerTest {
 
     @Test
     public void getAllBooksEmptyResult() throws Exception {
-        when(bookService.findAllBooks()).thenReturn(new PageImpl<>(new ArrayList<>()));
+        Pageable pageable = PageRequest.of(0,5, Sort.by("title").ascending());
+        when(bookService.findAllBooks(pageable)).thenReturn(new PageImpl<>(new ArrayList<>()));
         mockMvc.perform(MockMvcRequestBuilders.get("/book")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))

@@ -13,9 +13,19 @@ public class BookEntity extends AuditTable{
     private Long id;
     private String title;
 
+    private String description;
+
     @ManyToOne
     private Author author;
 
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public Long getId() {
         return id;
