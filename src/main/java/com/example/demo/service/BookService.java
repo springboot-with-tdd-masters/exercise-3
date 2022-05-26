@@ -11,10 +11,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -37,7 +39,6 @@ public class BookService {
         //finally
         author.setBooks(books);
 
-
         return authorRepo.save(author);
     }
 
@@ -48,8 +49,9 @@ public class BookService {
         throw NotFoundResponse();
     }
 
-    public Page<Author> findAuthorsWithPaginationAndSorting(int offset,int pageSize,String field){
-        Page<Author> authors = authorRepo.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(field)));
+    public Page<Author> findAuthorsWithPaginationAndSorting(int offset,int pageSize,String field,String order){
+        Sort sOrder = order.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(field).ascending() : Sort.by(field).descending();
+        Page<Author> authors = authorRepo.findAll(PageRequest.of(offset, pageSize, sOrder));
         return  authors;
     }
 
@@ -69,7 +71,12 @@ public class BookService {
     //create book
     public DTOResponse addBook(Book book){
         List<Author> author = authorRepo.findAll();
-        book.setAuthor_id(author.get(0).getId());
+        if (author.isEmpty()){
+            book.setAuthor_id(1L);
+        }else{
+            book.setAuthor_id(author.get(0).getId());
+        }
+
         Book bookfromRepo = bookRepo.save(book);
 
         Optional<Book> newBook = getBook(bookfromRepo.getId());
@@ -95,10 +102,13 @@ public class BookService {
         return bookRepo.findAll();
     }
 
-    public Page<Book> findBooksWithPaginationAndSorting(int offset,int pageSize,String field){
-        Page<Book> books = bookRepo.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(field)));
+    public Page<Book> findBooksWithPaginationAndSorting(int offset,int pageSize,String field,String order){
+
+        Sort sOrder = order.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(field).ascending() : Sort.by(field).descending();
+        Page<Book> books = bookRepo.findAll(PageRequest.of(offset, pageSize,sOrder));
         return  books;
     }
+
 
     //delete a book
     public void deleteBook(Long id){

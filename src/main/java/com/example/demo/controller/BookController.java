@@ -38,8 +38,9 @@ public class BookController {
     }
 
     @GetMapping("/authors/{offset}/{pageSize}/{field}")
-    private DTOResponse<Page<Author>> getAuthorsWithPaginationAndSort(@PathVariable int offset, @PathVariable int pageSize, @PathVariable String field) {
-        Page<Author> authorsWithPagination = bookService.findAuthorsWithPaginationAndSorting(offset, pageSize, field);
+    private DTOResponse<Page<Author>> getAuthorsWithPaginationAndSort(@PathVariable int offset, @PathVariable int pageSize,
+                                                                      @PathVariable String field,@RequestParam String order) {
+        Page<Author> authorsWithPagination = bookService.findAuthorsWithPaginationAndSorting(offset, pageSize, field,order);
         return new DTOResponse<>(authorsWithPagination.getSize(), authorsWithPagination);
     }
 
@@ -56,10 +57,9 @@ public class BookController {
     }
 
     @PutMapping("/books")
-    public ResponseEntity<Book> updateBook(@RequestBody Book book){
+    public DTOResponse<Book> updateBook(@RequestBody Book book){
         logger.info("Updating Book...");
-        bookService.addBook(book);
-        return new ResponseEntity<Book>(book,HttpStatus.OK);
+        return bookService.addBook(book);
     }
 
     @GetMapping("/books/{id}")
@@ -79,8 +79,9 @@ public class BookController {
         return bookService.getBooks();
     }
     @GetMapping("/books/{offset}/{pageSize}/{field}")
-    private DTOResponse<Page<Book>> getBooksWithPaginationAndSort(@PathVariable int offset, @PathVariable int pageSize, @PathVariable String field) {
-        Page<Book> booksWithPagination = bookService.findBooksWithPaginationAndSorting(offset, pageSize, field);
+    private DTOResponse<Page<Book>> getBooksWithPaginationAndSort(@PathVariable int offset, @PathVariable int pageSize,
+                                                                  @PathVariable String field,@RequestParam String order) {
+        Page<Book> booksWithPagination = bookService.findBooksWithPaginationAndSorting(offset, pageSize, field,order);
         return new DTOResponse<>(booksWithPagination.getSize(), booksWithPagination);
     }
 
