@@ -1,49 +1,30 @@
 package com.example.demo.model;
 
-import javax.persistence.*;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonAlias;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.util.Date;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-public class Book {
+public class Book extends CustomEntityAudit{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
-    private String description;
     private String title;
+    private String description;
 
+    @Column(name = "cp_fk")
+    private Long author_id;
 
-
-    public Book(){}
-
-    public Book(Long id, String description, String title) {
-        this.id = id;
-        this.description = description;
-        this.title = title;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
 }

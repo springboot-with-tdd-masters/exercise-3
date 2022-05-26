@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.APIResponse;
+import com.example.demo.dto.DTOResponse;
 import com.example.demo.model.Author;
 import com.example.demo.model.Book;
 import com.example.demo.service.BookService;
@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,18 +25,22 @@ public class BookController {
     BookService bookService;
 
     @PostMapping("/authors")
-    public ResponseEntity<Author> addAuthor(@RequestBody Author author){
+
+    public ResponseEntity<DTOResponse> addAuthor(@RequestBody Author author){
         logger.info("Adding Author...");
         Long id = bookService.addAuthor(author).getId();
         Optional<Author> newAuthor = bookService.getAuthor(id);
+        if (newAuthor.isPresent()){
+            return ResponseEntity.status(HttpStatus.CREATED).body(new DTOResponse(1,newAuthor));
+        }
+        throw bookService.NotFoundResponse();
 
-        return new ResponseEntity<Author>(newAuthor.get(),HttpStatus.CREATED);
     }
 
     @GetMapping("/authors/{offset}/{pageSize}/{field}")
-    private APIResponse<Page<Author>> getAuthorsWithPaginationAndSort(@PathVariable int offset, @PathVariable int pageSize, @PathVariable String field) {
+    private DTOResponse<Page<Author>> getAuthorsWithPaginationAndSort(@PathVariable int offset, @PathVariable int pageSize, @PathVariable String field) {
         Page<Author> authorsWithPagination = bookService.findAuthorsWithPaginationAndSorting(offset, pageSize, field);
-        return new APIResponse<>(authorsWithPagination.getSize(), authorsWithPagination);
+        return new DTOResponse<>(authorsWithPagination.getSize(), authorsWithPagination);
     }
 
     @GetMapping("/authors/{id}")
@@ -45,12 +50,9 @@ public class BookController {
     }
 
     @PostMapping("/books")
-    public ResponseEntity<Book> addBook(@RequestBody Book book){
+    public DTOResponse<Book> addBook(@RequestBody Book book){
         logger.info("Adding Book...");
-        Long id = bookService.addBook(book).getId();
-        Optional<Book> newBook = bookService.getBook(id);
-
-        return new ResponseEntity<Book>(newBook.get(),HttpStatus.CREATED);
+        return bookService.addBook(book);
     }
 
     @PutMapping("/books")
@@ -63,6 +65,7 @@ public class BookController {
     @GetMapping("/books/{id}")
     public Optional<Book> getBook(@PathVariable Long id){
         logger.info("Getting Book...");
+
         return bookService.getBook(id);
     }
 
@@ -75,6 +78,12 @@ public class BookController {
         }
         return bookService.getBooks();
     }
+    @GetMapping("/books/{offset}/{pageSize}/{field}")
+    private DTOResponse<Page<Book>> getBooksWithPaginationAndSort(@PathVariable int offset, @PathVariable int pageSize, @PathVariable String field) {
+        Page<Book> booksWithPagination = bookService.findBooksWithPaginationAndSorting(offset, pageSize, field);
+        return new DTOResponse<>(booksWithPagination.getSize(), booksWithPagination);
+    }
+
 
     @DeleteMapping("/books/{id}")
     public String deleteBook(@PathVariable Long id){
@@ -82,4 +91,5 @@ public class BookController {
         bookService.deleteBook(id);
         return "Book Deleted with reference Id: "+id;
     }
+
 }
