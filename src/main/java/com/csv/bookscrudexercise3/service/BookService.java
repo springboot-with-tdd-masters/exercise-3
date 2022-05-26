@@ -21,5 +21,5 @@ public interface BookService {
 	
 	public Book updateBook(BookUpdate newBook, Book book);
 	
-	public void deleteBookById(Long id) throws RecordNotFoundException;
+	public void deleteBookById(Long authorId, Long bookId) throws RecordNotFoundException;
 }

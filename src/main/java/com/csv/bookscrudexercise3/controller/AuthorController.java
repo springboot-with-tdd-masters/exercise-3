@@ -67,8 +67,8 @@ public class AuthorController {
 	}
 	
 	@DeleteMapping("/{author_id}/books/{book_id}")
-	public void deleteBook(@PathVariable("book_id") Long bookId) throws RecordNotFoundException {
-		bookService.deleteBookById(bookId);
+	public void deleteBook(@PathVariable("author_id") Long authorId, @PathVariable("book_id") Long bookId) throws RecordNotFoundException {
+		bookService.deleteBookById(authorId, bookId);
 	}
 	
 }

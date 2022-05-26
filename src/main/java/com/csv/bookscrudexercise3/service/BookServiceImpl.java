@@ -57,8 +57,9 @@ public class BookServiceImpl implements BookService {
 	}
 
 	@Override
-	public void deleteBookById(Long id) throws RecordNotFoundException {
-		bookRepository.findById(id).orElseThrow(RecordNotFoundException::new);
-		bookRepository.deleteById(id);
+	public void deleteBookById(Long authorId, Long bookId) throws RecordNotFoundException {
+		authorRepository.findById(authorId).orElseThrow(RecordNotFoundException::new);
+		bookRepository.findById(bookId).orElseThrow(RecordNotFoundException::new);
+		bookRepository.deleteById(bookId);
 	}
 }
