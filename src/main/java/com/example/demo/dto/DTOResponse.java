@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DTOResponse<T> {
-
     private int recordLimit;
     private T record;
-
-
 }

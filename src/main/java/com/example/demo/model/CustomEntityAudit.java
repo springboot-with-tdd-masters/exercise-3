@@ -15,7 +15,7 @@ import java.util.Date;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class CustomEntityAudit implements Serializable {
 
-    private static final long serialVersionUID = 143445154L;
+    private static final long serialVersionUID = 143445254L;
 
     @CreatedDate
     @Column(name = "created_date",  nullable = false, updatable = false)

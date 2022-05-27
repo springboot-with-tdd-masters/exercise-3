@@ -28,7 +28,6 @@ public class BookService {
     @Autowired
     AuthorRepo authorRepo;
 
-    //create author
     public Author addAuthor(Author author){
         //retrieve book list
         List<Book> booksRepo = bookRepo.findAll();
@@ -49,21 +48,25 @@ public class BookService {
         throw NotFoundResponse();
     }
 
-    public Page<Author> findAuthorsWithPaginationAndSorting(int offset,int pageSize,String field,String order){
-        Sort sOrder = order.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(field).ascending() : Sort.by(field).descending();
-        Page<Author> authors = authorRepo.findAll(PageRequest.of(offset, pageSize, sOrder));
-        return  authors;
-    }
-
-
     public List<Author> getAuthors(){
+        if (authorRepo.findAll().isEmpty()){
+            throw NotFoundResponse();
+        }
         return authorRepo.findAll();
     }
-
 
     public void deleteAuthor(Long id){
         authorRepo.deleteById(id);
     }
+
+    public Page<Author> findAuthorsWithPaginationAndSorting(int offset,int pageSize,String field,String order){
+        Sort sOrder = order.equalsIgnoreCase(
+                Sort.Direction.ASC.name()) ? Sort.by(field).ascending() : Sort.by(field).descending();
+        Page<Author> authors = authorRepo.findAll(PageRequest.of(offset, pageSize, sOrder));
+
+        return  authors;
+    }
+
 
     /*
     *Book Section
@@ -84,35 +87,35 @@ public class BookService {
             return new DTOResponse<Book>(1, newBook.get());
         }
         throw NotFoundResponse();
-
     }
-
 
     //get a book
     public Optional<Book> getBook(Long id){
         if (bookRepo.findById(id).isPresent()){
             return bookRepo.findById(id);
         }
-
         throw NotFoundResponse();
     }
 
     //get all books
     public List<Book> getBooks(){
+        if (bookRepo.findAll().isEmpty()){
+            throw NotFoundResponse();
+        }
         return bookRepo.findAll();
     }
+
+    //delete a book
+    public void deleteBook(Long id){
+         bookRepo.deleteById(id);
+    }
+
 
     public Page<Book> findBooksWithPaginationAndSorting(int offset,int pageSize,String field,String order){
 
         Sort sOrder = order.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(field).ascending() : Sort.by(field).descending();
         Page<Book> books = bookRepo.findAll(PageRequest.of(offset, pageSize,sOrder));
         return  books;
-    }
-
-
-    //delete a book
-    public void deleteBook(Long id){
-         bookRepo.deleteById(id);
     }
 
     public ResponseStatusException NotFoundResponse(){

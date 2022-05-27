@@ -24,41 +24,9 @@ public class BookController {
     @Autowired
     BookService bookService;
 
-    @PostMapping("/authors")
-
-    public ResponseEntity<DTOResponse> addAuthor(@RequestBody Author author){
-        logger.info("Adding Author...");
-        Long id = bookService.addAuthor(author).getId();
-        Optional<Author> newAuthor = bookService.getAuthor(id);
-        if (newAuthor.isPresent()){
-            return ResponseEntity.status(HttpStatus.CREATED).body(new DTOResponse(1,newAuthor));
-        }
-        throw bookService.NotFoundResponse();
-
-    }
-
-    @GetMapping("/authors/{offset}/{pageSize}/{field}")
-    private DTOResponse<Page<Author>> getAuthorsWithPaginationAndSort(@PathVariable int offset, @PathVariable int pageSize,
-                                                                      @PathVariable String field,@RequestParam String order) {
-        Page<Author> authorsWithPagination = bookService.findAuthorsWithPaginationAndSorting(offset, pageSize, field,order);
-        return new DTOResponse<>(authorsWithPagination.getSize(), authorsWithPagination);
-    }
-
-    @GetMapping("/authors/{id}")
-    public Optional<Author> getAuthor(@PathVariable Long id){
-        logger.info("Getting Author...");
-        return bookService.getAuthor(id);
-    }
-
     @PostMapping("/books")
     public DTOResponse<Book> addBook(@RequestBody Book book){
         logger.info("Adding Book...");
-        return bookService.addBook(book);
-    }
-
-    @PutMapping("/books")
-    public DTOResponse<Book> updateBook(@RequestBody Book book){
-        logger.info("Updating Book...");
         return bookService.addBook(book);
     }
 
@@ -72,19 +40,23 @@ public class BookController {
     @GetMapping("/books")
     public List<Book> getBooks(){
         logger.info("Getting All Books...");
-        if(bookService.getBooks().isEmpty()){
-            //TODO:if empty return no record found
-            System.out.println("empty");
-        }
+
         return bookService.getBooks();
     }
+
+
+    @PutMapping("/books")
+    public DTOResponse<Book> updateBook(@RequestBody Book book){
+        logger.info("Updating Book...");
+        return bookService.addBook(book);
+    }
+
     @GetMapping("/books/{offset}/{pageSize}/{field}")
     private DTOResponse<Page<Book>> getBooksWithPaginationAndSort(@PathVariable int offset, @PathVariable int pageSize,
                                                                   @PathVariable String field,@RequestParam String order) {
         Page<Book> booksWithPagination = bookService.findBooksWithPaginationAndSorting(offset, pageSize, field,order);
         return new DTOResponse<>(booksWithPagination.getSize(), booksWithPagination);
     }
-
 
     @DeleteMapping("/books/{id}")
     public String deleteBook(@PathVariable Long id){
