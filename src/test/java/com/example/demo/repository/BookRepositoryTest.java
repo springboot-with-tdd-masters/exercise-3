@@ -61,7 +61,7 @@ class BookRepositoryTest {
     }
 
     @Test
-    @DisplayName("Should successfully delete by Id")
+    @DisplayName("Should successfully find by author name")
     public void testFindBookByAuthorName(){
         when(bookRepository.findByAuthorName(author1)).thenReturn(Arrays.asList(bookList.get(0)));
         List<Book> retrievedBooks = bookRepository.findByAuthorName(author1);
