@@ -20,6 +20,6 @@ public class BaseEntity {
     private Date createdDate;
 
     @LastModifiedDate
-    @Column(name = "last_moified_date")
+    @Column(name = "last_modified_date")
     private Date lastModifiedDate;
 }

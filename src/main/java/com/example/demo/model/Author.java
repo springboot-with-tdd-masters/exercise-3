@@ -15,14 +15,12 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-//@Table(name="author")
 public class Author extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    //    @OneToMany(cascade = CascadeType.ALL, mappedBy = "book")
     @JsonIgnore
     @OneToMany(mappedBy="author")
     private Set<Book> books;

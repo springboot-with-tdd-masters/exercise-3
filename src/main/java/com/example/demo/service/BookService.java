@@ -8,8 +8,7 @@ import com.example.demo.repository.AuthorRepository;
 import com.example.demo.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -42,16 +41,24 @@ public class BookService {
         return newBook.getId();
     }
 
-    public List<Book> getAllBooks(){
-        return bookRepository.findAll();
-    }
-
-    public Book getBookById(Long id){
+    public Book readBookById(Long id){
         Optional<Book> requestedBook = bookRepository.findById(id);
         if(requestedBook.isEmpty()){
             throw new BookNotFoundException(String.format("Book with id %s not found", id));
         }
         return requestedBook.get();
+    }
+
+    public Page<Book> readBookByTitle(String title, Pageable pageable){
+        Page<Book> requestedBook = bookRepository.findByTitleContainingIgnoreCase(title, pageable);
+        if(requestedBook.isEmpty()){
+            throw new BookNotFoundException(String.format("Book with title %s not found", title));
+        }
+        return requestedBook;
+    }
+
+    public Page<Book> readAllBooks(Pageable pageable){
+        return bookRepository.findAll(pageable);
     }
 
     private Author buildAuthor(String authorName) {
@@ -72,20 +79,5 @@ public class BookService {
 
     public void deleteBookById(Long id) {
         bookRepository.deleteById(id);
-    }
-
-    public List<Book> findBooksWithSorting(String field){
-        return bookRepository.findAll(Sort.by(Sort.Direction.ASC,field));
-    }
-
-    public Page<Book> findBooksWithPagination(int offset, int pageSize){
-        return bookRepository.findAll(PageRequest.of(offset, pageSize));
-    }
-
-    public Page<Book> findBooksWithPaginationAndSorting(int offset,int pageSize,String field, String order){
-        if(order.equalsIgnoreCase("desc")){
-            return bookRepository.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(field).descending()));
-        }
-        return bookRepository.findAll(PageRequest.of(offset, pageSize).withSort(Sort.by(field)));
     }
 }

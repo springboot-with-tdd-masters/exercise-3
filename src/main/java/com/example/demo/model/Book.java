@@ -2,7 +2,6 @@ package com.example.demo.model;
 
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.persistence.*;
 
@@ -14,8 +13,6 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-//@Table(name="book") // if different table name
-//@Audited
 public class Book extends BaseEntity {
 
     @Id

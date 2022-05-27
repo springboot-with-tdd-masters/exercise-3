@@ -2,66 +2,109 @@ package com.example.demo.repository;
 
 import com.example.demo.model.Author;
 import com.example.demo.model.Book;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 
 @DataJpaTest
 class BookRepositoryTest {
 
-    private final String bookTitle1 = "Othello";
-    private final String bookTitle2 = "ForOneMoreDay";
-    private final String author1 = "William Shakespeare";
-    private final String author2 = "Mitch Albom";
-    @Autowired
+    @MockBean
     private BookRepository bookRepository;
-    @Autowired
-    private AuthorRepository authorRepository;
+
+    private final String bookTitle1 = "Harry Potter and the Sorcerer's Stone";
+    private final String bookTitle2 = "Harry Potter and the Chamber of Secrets";
+    private final String bookTitle3 = "Othello";
+    private final String bookTitle4 = "For One More Day";
+    private final String author1 = "J. K. Rowling";
+    private final String author3 = "William Shakespeare";
+    private final String author4 = "Mitch Albom";
+
+    private List<Book> bookList = new ArrayList<>();
+    @BeforeEach
+    public void setUp(){
+        bookList.add(addBook(bookTitle1, author1, 1L));
+        bookList.add(addBook(bookTitle2, author1, 2L));
+        bookList.add(addBook(bookTitle3, author3, 3L));
+        bookList.add(addBook(bookTitle4, author4, 4L));
+    }
+
+    @AfterEach
+    public void close(){
+        bookList = new ArrayList<>();
+    }
+
+    private Book addBook(String title, String author, long id) {
+        return Book.builder().id(id).title(title).author(Author.builder().id(id == 2L ? 1L : id).name(author).build()).build();
+    }
+
     @Test
+    @DisplayName("Should return all books")
     public void testFindAllBooks(){
-        bookRepository.save(Book.builder().title(bookTitle1).author(createAuthor(author1)).build());
-        bookRepository.save(Book.builder().title(bookTitle2).author(createAuthor(author2)).build());
-
+        when(bookRepository.findAll()).thenReturn(bookList);
         List<Book> retrievedBooks = bookRepository.findAll();
-        assertEquals(2, retrievedBooks.size());
-    }
-
-    private Author createAuthor(String author) {
-        return authorRepository.save(Author.builder().name(author).build());
+        assertEquals(4, retrievedBooks.size());
     }
 
     @Test
-    public void testFindById(){
-        Book savedBook = bookRepository.save(Book.builder().title("title1").author(Author.builder().name("author1").build()).build());
-        Book savedBook2 = bookRepository.save(Book.builder().title("title2").author(Author.builder().name("author2").build()).build());
-        Optional<Book> retrievedBook = bookRepository.findById(savedBook.getId());
-        assertEquals(savedBook.getTitle(), retrievedBook.get().getTitle());
-        assertNotEquals(savedBook2.getAuthor().getName(), retrievedBook.get().getAuthor().getName());
+    @DisplayName("Should successfully delete by Id")
+    public void testFindBookByAuthorName(){
+        when(bookRepository.findByAuthorName(author1)).thenReturn(Arrays.asList(bookList.get(0)));
+        List<Book> retrievedBooks = bookRepository.findByAuthorName(author1);
+        assertEquals(author1, retrievedBooks.get(0).getAuthor().getName());
     }
 
     @Test
-    public void testDeleteById(){
-        Book savedBook1 = bookRepository.save(Book.builder().title(bookTitle1).author(createAuthor(author1)).build());
-        bookRepository.save(Book.builder().title(bookTitle2).author(createAuthor(author2)).build());
-
-        Book savedBook = bookRepository.findById(savedBook1.getId()).get();
-        bookRepository.deleteById(savedBook.getId());
-        List<Book> retrievedBooks = bookRepository.findAll();
-        assertEquals(1, retrievedBooks.size());
+    @DisplayName("Should successfully delete by Id")
+    public void testFindBookById(){
+        long id = 1L;
+        when(bookRepository.findById(id)).thenReturn(Optional.ofNullable(bookList.get(0)));
+        Book requestedBook = bookRepository.findById(id).get();
+        assertEquals(bookTitle1, requestedBook.getTitle());
+        assertEquals(id, requestedBook.getId());
     }
 
     @Test
-    public void testUpdateBook(){
-        Book savedBook = bookRepository.save(Book.builder().title("title1").author(Author.builder().name("author1").build()).build());
-        Optional<Book> retrievedBook = bookRepository.findById(savedBook.getId());
-        retrievedBook.get().setAuthor(Author.builder().name("newAuthor").build());
-        Book updatedBook = bookRepository.save(retrievedBook.get());
-        assertEquals("newAuthor", updatedBook.getAuthor().getName());
+    @DisplayName("Should delete 1 book based on the requested Id")
+    public void testDeleteBookById(){
+        long id = 1L;
+        bookList.remove(0);
+        when(bookRepository.findAll()).thenReturn(bookList);
+        doNothing().when(bookRepository).deleteById(id);
+        bookRepository.deleteById(id);
+
+        List<Book> retrievedNewSetOfBooks = bookRepository.findAll();
+        assertEquals(3, retrievedNewSetOfBooks.size());
+    }
+
+    @Test
+    @DisplayName("Should read books containing the given title name")
+    public void testFindBookByTitleContainingIgnoreCase(){
+        Pageable pageRequest = PageRequest.of(0, 3, Sort.by("id").descending());
+        String partOfTitle = "the";
+        List<Book> sortedBooks = bookList.stream()
+                .filter( b -> b.getTitle().contains(partOfTitle))
+                .sorted(Comparator.comparing(Book::getId).reversed())
+                .collect(Collectors.toList());
+        Page<Book> bookPage = new PageImpl<>(sortedBooks);
+        when(bookRepository.findByTitleContainingIgnoreCase(partOfTitle, pageRequest)).thenReturn(bookPage);
+        Page<Book> requestedBooks = bookRepository.findByTitleContainingIgnoreCase(partOfTitle, pageRequest);
+
+        assertThat(requestedBooks.getContent(),hasSize(3));
+        assertTrue(requestedBooks.getContent().get(0).getTitle().contains(partOfTitle));
     }
 }
