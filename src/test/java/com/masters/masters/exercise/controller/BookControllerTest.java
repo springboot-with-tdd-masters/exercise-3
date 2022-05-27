@@ -47,24 +47,13 @@ public class BookControllerTest {
         book1.setTitle("title1");
         BookEntity book2 = new BookEntity();
         book2.setTitle("title2");
-        Pageable pageable = PageRequest.of(0,5, Sort.by("title").ascending());
-        when(bookService.findAllBooks(pageable)).thenReturn(new PageImpl<>(List.of(book1,book2)));
+        when(bookService.findBookByTitle(Mockito.anyString(),Mockito.any(PageRequest.class))).thenReturn(new PageImpl<>(List.of(book1,book2)));
         mockMvc.perform(MockMvcRequestBuilders.get("/book")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON).param("title","ti"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[0].title").value("title1"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.content[1].title").value("title2"));
     }
 
-    @Test
-    public void getAllBooksEmptyResult() throws Exception {
-        Pageable pageable = PageRequest.of(0,5, Sort.by("title").ascending());
-        when(bookService.findAllBooks(pageable)).thenReturn(new PageImpl<>(new ArrayList<>()));
-        mockMvc.perform(MockMvcRequestBuilders.get("/book")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content").isEmpty());
-    }
 }

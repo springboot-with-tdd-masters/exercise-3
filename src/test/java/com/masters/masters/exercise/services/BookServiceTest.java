@@ -85,22 +85,57 @@ public class BookServiceTest {
     }
 
     @Test
-    public void findById() throws RecordNotFoundException {
-        BookEntity entity = new BookEntity();
-        entity.setAuthor(new Author());
-        entity.setTitle("title");
-        entity.setDescription("description");
-        when(repo.findById(Mockito.anyLong())).thenReturn(Optional.of(entity));
-        BookEntity bookOption = bookService.findById(Long.parseLong("1"));
-        Assertions.assertNotNull(bookOption);
+    public void findByAuthorId() throws RecordNotFoundException {
+        Author author = new Author();
+        author.setId(Long.parseLong("1"));
+        author.setName("name");
+        BookEntity book1 = new BookEntity();
+        book1.setId(1L);
+        book1.setTitle("title1");
+        BookEntity book2 = new BookEntity();
+        book1.setId(2L);
+        book2.setTitle("title2");
+        Pageable pageable = PageRequest.of(0,20);
+        when(authorRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(author));
+        when(repo.findByAuthor(Mockito.any(Author.class),Mockito.any())).thenReturn(List.of(book1,book2));
+        Page<BookEntity> bookPage = bookService.findByAuthorId(Long.parseLong("1"),pageable);
+        verify(authorRepository).findById(Long.parseLong("1"));
+        verify(repo).findByAuthor(author,pageable);
+        Assertions.assertEquals(2,bookPage.getContent().size());
     }
 
     @Test
-    public void findByIdNoRecord(){
-        when(repo.findById(Mockito.anyLong())).thenReturn(Optional.empty());
-        RecordNotFoundException thrown = Assertions.assertThrows(RecordNotFoundException.class, () -> {
-            bookService.findById(Long.parseLong("99"));
-        });
-        Assertions.assertEquals("Book not found", thrown.getMessage());;
+    public void findByAuthorIdAndBookId() throws RecordNotFoundException {
+        Author author = new Author();
+        author.setId(Long.parseLong("1"));
+        author.setName("name");
+        BookEntity book1 = new BookEntity();
+        book1.setId(1L);
+        book1.setTitle("title1");
+        BookEntity book2 = new BookEntity();
+        book1.setId(2L);
+        book2.setTitle("title2");
+        Pageable pageable = PageRequest.of(0,20);
+        when(authorRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(author));
+        when(repo.findByAuthorAndId(Mockito.any(Author.class),Mockito.anyLong(),Mockito.any())).thenReturn(List.of(book1));
+        Page<BookEntity> bookPage = bookService.findByAuthorIdAndBookId(Long.parseLong("1"),1L,pageable);
+        verify(authorRepository).findById(Long.parseLong("1"));
+        verify(repo).findByAuthorAndId(author,1L,pageable);
+        Assertions.assertEquals(1,bookPage.getContent().size());
+    }
+
+    @Test
+    public void findBookByTitle() throws RecordNotFoundException {
+        BookEntity book1 = new BookEntity();
+        book1.setId(1L);
+        book1.setTitle("title1");
+        BookEntity book2 = new BookEntity();
+        book1.setId(2L);
+        book2.setTitle("title2");
+        Pageable pageable = PageRequest.of(0,20);
+        when(repo.findByTitleContaining(Mockito.anyString(),Mockito.any())).thenReturn(List.of(book1,book2));
+        Page<BookEntity> bookPage = bookService.findBookByTitle("ti",pageable);
+        verify(repo).findByTitleContaining("ti",pageable);
+        Assertions.assertEquals(2,bookPage.getContent().size());
     }
 }

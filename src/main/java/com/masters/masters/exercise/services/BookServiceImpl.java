@@ -8,10 +8,7 @@ import com.masters.masters.exercise.model.BookEntity;
 import com.masters.masters.exercise.repository.AuthorRepository;
 import com.masters.masters.exercise.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -45,12 +42,44 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public BookEntity findById(Long id) throws RecordNotFoundException {
-        Optional<BookEntity> entity = repo.findById(id);
-        if(entity.isPresent()){
-            return entity.get();
+    public Page<BookEntity> findByAuthorId(Long id,Pageable pageRequest) throws RecordNotFoundException {
+        Optional<Author> author = authorRepository.findById(id);
+        if(author.isPresent()){
+            List<BookEntity> entity = repo.findByAuthor(author.get(),pageRequest);
+            if(!entity.isEmpty()){
+                return new PageImpl<>(entity);
+            }else{
+                throw new RecordNotFoundException("Book not found");
+            }
         }else{
-            throw new RecordNotFoundException("Book not found");
+            throw new RecordNotFoundException("Author not found");
         }
+
+    }
+
+    @Override
+    public Page<BookEntity> findByAuthorIdAndBookId(Long authorId, Long bookId, Pageable pageRequest) throws RecordNotFoundException {
+        Optional<Author> author = authorRepository.findById(authorId);
+        if(author.isPresent()){
+            List<BookEntity> entity = repo.findByAuthorAndId(author.get(),bookId,pageRequest);
+            if(!entity.isEmpty()){
+                return new PageImpl<>(entity);
+            }else{
+                throw new RecordNotFoundException("Book not found");
+            }
+        }else{
+            throw new RecordNotFoundException("Author not found");
+        }
+    }
+
+    @Override
+    public Page<BookEntity> findBookByTitle(String title, Pageable pageable) throws RecordNotFoundException {
+        List<BookEntity> bookList = repo.findByTitleContaining(title,pageable);
+        if(bookList.isEmpty()){
+            throw new RecordNotFoundException("Books not found");
+        }else{
+            return new PageImpl<>(bookList);
+        }
+
     }
 }

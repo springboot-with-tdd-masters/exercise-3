@@ -10,11 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.verify;
@@ -67,6 +66,20 @@ public class AuthorServiceTest {
         });
         Assertions.assertEquals("Author not found", thrown.getMessage());;
 
+    }
+
+    @Test
+    public void findAllAuthors(){
+        Author author1 = new Author();
+        author1.setName("name");
+        author1.setId(Long.parseLong("1"));
+        Author author2 = new Author();
+        author2.setName("name");
+        author2.setId(Long.parseLong("2"));
+        Pageable pageable = PageRequest.of(0,20);
+        when(repo.findAll(pageable)).thenReturn(new PageImpl<>(List.of(author1,author2)));
+        Page<Author> page = authorService.findAllAuthors(pageable);
+        Assertions.assertEquals(2,page.getContent().size());
     }
 
 }
