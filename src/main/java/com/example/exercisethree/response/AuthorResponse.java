@@ -1,5 +1,7 @@
 package com.example.exercisethree.response;
 
+import com.example.exercisethree.exception.LibraryAppException;
+import com.example.exercisethree.exception.LibraryAppExceptionCode;
 import com.example.exercisethree.model.Author;
 
 public class AuthorResponse {
@@ -35,13 +37,18 @@ public class AuthorResponse {
 	}
 	
 	public static AuthorResponse convertToAuthorResponse(Author authorEntity) {
-		AuthorResponse response = new AuthorResponse();
-		response.setCreatedAt(authorEntity.getCreatedDate().toString());
-		response.setUpdatedAt(authorEntity.getLastModifiedDate().toString());
-		response.setId(authorEntity.getId());
-		response.setName(authorEntity.getName());
+		try {
+			AuthorResponse response = new AuthorResponse();
+			response.setCreatedAt(authorEntity.getCreatedDate().toString());
+			response.setUpdatedAt(authorEntity.getLastModifiedDate().toString());
+			response.setId(authorEntity.getId());
+			response.setName(authorEntity.getName());
+			
+			return response;
+		} catch (Exception e) {
+			throw new LibraryAppException(LibraryAppExceptionCode.UNABLE_TO_MAP_EXCEPTION);
+		}
 		
-		return response;
 	}
 	
 }

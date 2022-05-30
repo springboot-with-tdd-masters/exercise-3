@@ -1,7 +1,5 @@
 package com.example.exercisethree.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.example.exercisethree.exception.RecordNotFoundException;
+import com.example.exercisethree.exception.LibraryAppException;
+import com.example.exercisethree.exception.LibraryAppExceptionCode;
 import com.example.exercisethree.model.Author;
 import com.example.exercisethree.model.Book;
 import com.example.exercisethree.repository.AuthorRepository;
@@ -28,17 +27,16 @@ public class BookServiceImpl implements BookService{
 	AuthorRepository authorRepository;
 	
 	@Override
-	public AuthorResponse createAuthor(Author authorRequest) throws RecordNotFoundException {
+	public AuthorResponse createAuthor(Author authorRequest) {
 		Author authorEntity = new Author();
-		if (authorRequest.getName() != null) {
+		if (authorRequest.getName() != null || !authorRequest.getName().isEmpty()) {
 			authorEntity.setName(authorRequest.getName());
 			authorRepository.save(authorEntity);
 			
 			return AuthorResponse.convertToAuthorResponse(authorEntity);
 		} else {
-			throw new RecordNotFoundException("There is no record with that ID");
+			throw new LibraryAppException(LibraryAppExceptionCode.INVALID_NAME_EXCEPTION);
 		}
-		
 	}
 
 	@Override
@@ -47,18 +45,18 @@ public class BookServiceImpl implements BookService{
 	}
 
 	@Override
-	public AuthorResponse getAuthorById(Long id) throws RecordNotFoundException {
+	public AuthorResponse getAuthorById(Long id) {
 		Optional<Author> author = authorRepository.findById(id);
 		
 		if (author.isPresent()) {
 			return AuthorResponse.convertToAuthorResponse(author.get());
 		} else {
-			throw new RecordNotFoundException("There is no record with that ID");
+			throw new LibraryAppException(LibraryAppExceptionCode.AUTHOR_NOT_FOUND_EXCEPTION);
 		}
 	}
 
 	@Override
-	public BookResponse createBook(Long id, Book book) throws RecordNotFoundException {
+	public BookResponse createBook(Long id, Book book) {
 		Optional<Author> author = authorRepository.findById(id);
 		
 		if (author.isPresent()) {
@@ -69,29 +67,29 @@ public class BookServiceImpl implements BookService{
 			bookRepository.save(newBook);
 			return BookResponse.convertToBookResponse(newBook);
 		} else {
-			throw new RecordNotFoundException("There is no record with that ID");
+			throw new LibraryAppException(LibraryAppExceptionCode.AUTHOR_NOT_FOUND_EXCEPTION);
 		}
 	}
 
 	@Override
-	public Page<BookResponse> getAllBooks(Long id, Pageable page) throws RecordNotFoundException {
+	public Page<BookResponse> getAllBooks(Long id, Pageable page) {
 		Optional<Author> author = authorRepository.findById(id);
 		
 		if (author.isPresent()) {
 			return bookRepository.findByAuthorId(id, page).map(BookResponse::convertToBookResponse);
 		} else {
-			throw new RecordNotFoundException("There is no record with that ID");
+			throw new LibraryAppException(LibraryAppExceptionCode.AUTHOR_NOT_FOUND_EXCEPTION);
 		}
 	}
 
 	@Override
-	public Page<BookResponse> getBookById(Long authorId, Long bookId, Pageable page) throws RecordNotFoundException {
-		Optional<Author> author = authorRepository.findById(authorId);
+	public Page<BookResponse> getBookById(Long authorId, Long bookId, Pageable page) {
+		Optional<Page<Book>> book = Optional.ofNullable(bookRepository.findByAuthorIdAndId(authorId, bookId, page));
 		
-		if (author.isPresent()) {
+		if (book.isPresent()) {
 			return bookRepository.findByAuthorIdAndId(authorId, bookId, page).map(BookResponse::convertToBookResponse);
 		} else {
-			throw new RecordNotFoundException("There is no record with that ID");
+			throw new LibraryAppException(LibraryAppExceptionCode.RECORD_NOT_FOUND);
 		}
 	}
 
@@ -101,30 +99,38 @@ public class BookServiceImpl implements BookService{
 	}
 
 	@Override
-	public BookResponse updateBook(Long authorId, Long bookId, Book book) throws RecordNotFoundException {
+	public BookResponse updateBook(Long authorId, Long bookId, Book book) {
 		Optional<Author> author = authorRepository.findById(authorId);
 		
 		if (author.isPresent()) {
 			Optional<Book> bookEntity = bookRepository.findById(bookId);
-			Book newBook = bookEntity.get();
-			newBook.setTitle(book.getTitle());
-			newBook.setDescription(book.getDescription());
-			bookRepository.save(newBook);
-			return BookResponse.convertToBookResponse(newBook);
+			if (bookEntity.isPresent()) {
+				Book newBook = bookEntity.get();
+				newBook.setTitle(book.getTitle());
+				newBook.setDescription(book.getDescription());
+				bookRepository.save(newBook);
+				return BookResponse.convertToBookResponse(newBook);
+			} else {
+				throw new LibraryAppException(LibraryAppExceptionCode.BOOK_NOT_FOUND_EXCEPTION);
+			}
 		} else {
-			throw new RecordNotFoundException("There is no record with that ID");
+			throw new LibraryAppException(LibraryAppExceptionCode.AUTHOR_NOT_FOUND_EXCEPTION);
 		}
 	}
 
-	public Book deleteByBookId(Long authorId, Long bookId) throws RecordNotFoundException {
+	public Book deleteByBookId(Long authorId, Long bookId) {
+		Optional<Author> author = authorRepository.findById(authorId);
 		Optional<Book> book = bookRepository.findById(bookId);
 		
-		if (book.isPresent()) {
-			bookRepository.deleteById(bookId);
-			return book.get();
+		if (author.isPresent()) {
+			if (book.isPresent()) {
+				bookRepository.deleteById(bookId);
+				return book.get();
+			} else {
+				throw new LibraryAppException(LibraryAppExceptionCode.BOOK_NOT_FOUND_EXCEPTION);
+			}
 		} else {
-			throw new RecordNotFoundException("There is no record with that ID");
+			throw new LibraryAppException(LibraryAppExceptionCode.AUTHOR_NOT_FOUND_EXCEPTION);
 		}
 	}
-	
 }

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.example.exercisethree.exception.RecordNotFoundException;
 import com.example.exercisethree.model.Author;
 import com.example.exercisethree.model.Book;
 import com.example.exercisethree.response.AuthorResponse;
@@ -31,7 +30,7 @@ public class BookController {
 	BookService service;
 	
 	@PostMapping
-	public ResponseEntity<AuthorResponse> createAuthor(@RequestBody Author author) throws RecordNotFoundException {
+	public ResponseEntity<AuthorResponse> createAuthor(@RequestBody Author author) {
 		AuthorResponse newAuthor = service.createAuthor(author);
 		
 		return new ResponseEntity<AuthorResponse>(newAuthor, new HttpHeaders(), HttpStatus.OK);
@@ -44,22 +43,29 @@ public class BookController {
 		return new ResponseEntity<Page<AuthorResponse>>(authors, new HttpHeaders(), HttpStatus.OK);
 	}
 	
+	@GetMapping("/{id}")
+	public ResponseEntity<AuthorResponse> getAuthorById(@PathVariable("id") Long id) {
+		AuthorResponse author = service.getAuthorById(id);
+		
+		return new ResponseEntity<AuthorResponse>(author, new HttpHeaders(), HttpStatus.OK);
+	}
+	
 	@PostMapping("/{id}/books")
-	public ResponseEntity<BookResponse> createBook(@PathVariable("id") Long id, @RequestBody Book book) throws RecordNotFoundException {
+	public ResponseEntity<BookResponse> createBook(@PathVariable("id") Long id, @RequestBody Book book) {
 		BookResponse newBook = service.createBook(id, book);
 		
 		return new ResponseEntity<BookResponse>(newBook, new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{id}/books")
-	public ResponseEntity<Page<BookResponse>> getAllBooks(@PathVariable("id") Long id, Pageable page) throws RecordNotFoundException {
+	public ResponseEntity<Page<BookResponse>> getAllBooks(@PathVariable("id") Long id, Pageable page) {
 		Page<BookResponse> books = service.getAllBooks(id, page);
 		
 		return new ResponseEntity<Page<BookResponse>>(books, new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@GetMapping("/{authorId}/books/{bookId}")
-	public ResponseEntity<Page<BookResponse>> getBookById(@PathVariable("authorId") Long authorId, @PathVariable("bookId") Long bookId, Pageable page) throws RecordNotFoundException {
+	public ResponseEntity<Page<BookResponse>> getBookById(@PathVariable("authorId") Long authorId, @PathVariable("bookId") Long bookId, Pageable page) {
 		Page<BookResponse> book = service.getBookById(authorId, bookId, page);
 		
 		return new ResponseEntity<Page<BookResponse>>(book, new HttpHeaders(), HttpStatus.OK);
@@ -73,14 +79,14 @@ public class BookController {
 	}
 	
 	@PutMapping("/{authorId}/books/{bookId}")
-	public ResponseEntity<BookResponse> updateBook(@PathVariable("authorId") Long authorId, @PathVariable("bookId") Long bookId, @RequestBody Book book) throws RecordNotFoundException {
+	public ResponseEntity<BookResponse> updateBook(@PathVariable("authorId") Long authorId, @PathVariable("bookId") Long bookId, @RequestBody Book book) {
 		BookResponse newBook = service.updateBook(authorId, bookId, book);
 		
 		return new ResponseEntity<BookResponse>(newBook, new HttpHeaders(), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{authorId}/books/{bookId}")
-	public ResponseEntity<Void> deleteABook(@PathVariable("authorId") Long authorId, @PathVariable("bookId") Long bookId) throws RecordNotFoundException {
+	public ResponseEntity<Void> deleteABook(@PathVariable("authorId") Long authorId, @PathVariable("bookId") Long bookId) {
 		service.deleteByBookId(authorId, bookId);
 		
 		return ResponseEntity.noContent().build();

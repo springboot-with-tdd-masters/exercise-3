@@ -1,5 +1,7 @@
 package com.example.exercisethree.response;
 
+import com.example.exercisethree.exception.LibraryAppException;
+import com.example.exercisethree.exception.LibraryAppExceptionCode;
 import com.example.exercisethree.model.Book;
 
 public class BookResponse {
@@ -48,14 +50,19 @@ public class BookResponse {
 	}
 	
 	public static BookResponse convertToBookResponse(Book book) {
-		BookResponse response = new BookResponse();
-		response.setCreatedAt(book.getCreatedDate().toString());
-		response.setUpdatedAt(book.getLastModifiedDate().toString());
-		response.setId(book.getId());
-		response.setTitle(book.getTitle());
-		response.setDescription(book.getDescription());
-		response.setAuthorId(book.getAuthor().getId());
-		
-		return response;
-	}
+		try {
+			BookResponse response = new BookResponse();
+			response.setCreatedAt(book.getCreatedDate().toString());
+			response.setUpdatedAt(book.getLastModifiedDate().toString());
+			response.setId(book.getId());
+			response.setTitle(book.getTitle());
+			response.setDescription(book.getDescription());
+			response.setAuthorId(book.getAuthor().getId());
+			
+			return response;
+
+		} catch (Exception e) {
+			throw new LibraryAppException(LibraryAppExceptionCode.UNABLE_TO_MAP_EXCEPTION);
+		}
+			}
 }
