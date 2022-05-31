@@ -34,7 +34,7 @@ public class AuthorController {
 		return service.create(author);
 	}
 
-	@GetMapping("/{id}")
+	@GetMapping("/getById/{id}")
 	public Author getById(@PathVariable Long id) {
 		return service.getAuthorById(id);
 	}
