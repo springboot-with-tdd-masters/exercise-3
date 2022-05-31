@@ -1,4 +1,4 @@
-package com.java.master.exercise1.controller;
+package com.java.master.exercise3.controller;
 
 import java.util.List;
 
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.java.master.exercise1.model.Book;
-import com.java.master.exercise1.service.BookService;
+import com.java.master.exercise3.model.Book;
+import com.java.master.exercise3.service.BookService;
 
 @RestController
 @RequestMapping("/book")

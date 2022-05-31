@@ -1,4 +1,4 @@
-package com.java.master.exercise1.model;
+package com.java.master.exercise3.model;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

@@ -1,4 +1,4 @@
-package com.java.master.exercise1.controller;
+package com.java.master.exercise3.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.java.master.exercise1.model.Author;
-import com.java.master.exercise1.model.Book;
-import com.java.master.exercise1.model.BookRequest;
-import com.java.master.exercise1.service.AuthorService;
-import com.java.master.exercise1.service.BookService;
+import com.java.master.exercise3.model.Author;
+import com.java.master.exercise3.model.Book;
+import com.java.master.exercise3.model.BookRequest;
+import com.java.master.exercise3.service.AuthorService;
+import com.java.master.exercise3.service.BookService;
 
 @RestController
 @RequestMapping("/authors")

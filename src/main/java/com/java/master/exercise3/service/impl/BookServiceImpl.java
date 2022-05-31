@@ -1,4 +1,4 @@
-package com.java.master.exercise1.service.impl;
+package com.java.master.exercise3.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,13 +9,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.java.master.exercise1.exception.RecordNotFoundException;
-import com.java.master.exercise1.model.Author;
-import com.java.master.exercise1.model.Book;
-import com.java.master.exercise1.model.BookRequest;
-import com.java.master.exercise1.repository.AuthorRepository;
-import com.java.master.exercise1.repository.BookRepository;
-import com.java.master.exercise1.service.BookService;
+import com.java.master.exercise3.exception.RecordNotFoundException;
+import com.java.master.exercise3.model.Author;
+import com.java.master.exercise3.model.Book;
+import com.java.master.exercise3.model.BookRequest;
+import com.java.master.exercise3.repository.AuthorRepository;
+import com.java.master.exercise3.repository.BookRepository;
+import com.java.master.exercise3.service.BookService;
 
 @Service
 public class BookServiceImpl implements BookService {

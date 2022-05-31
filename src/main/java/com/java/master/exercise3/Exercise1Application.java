@@ -1,4 +1,4 @@
-package com.java.master.exercise1;
+package com.java.master.exercise3;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,12 +1,12 @@
-package com.java.master.exercise1.service;
+package com.java.master.exercise3.service;
 
 import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.java.master.exercise1.model.Book;
-import com.java.master.exercise1.model.BookRequest;
+import com.java.master.exercise3.model.Book;
+import com.java.master.exercise3.model.BookRequest;
 
 public interface BookService {
 	

@@ -1,4 +1,4 @@
-package com.java.master.exercise1.exception;
+package com.java.master.exercise3.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

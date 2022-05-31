@@ -1,9 +1,9 @@
-package com.java.master.exercise1.service;
+package com.java.master.exercise3.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.java.master.exercise1.model.Author;
+import com.java.master.exercise3.model.Author;
 
 public interface AuthorService {
 

@@ -1,4 +1,4 @@
-package com.java.master.exercise1.repository;
+package com.java.master.exercise3.repository;
 
 import java.util.Optional;
 
@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.java.master.exercise1.model.Book;
+import com.java.master.exercise3.model.Book;
 
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {

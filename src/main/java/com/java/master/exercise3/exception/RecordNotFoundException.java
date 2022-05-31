@@ -1,4 +1,4 @@
-package com.java.master.exercise1.exception;
+package com.java.master.exercise3.exception;
 
 public class RecordNotFoundException extends RuntimeException{
 

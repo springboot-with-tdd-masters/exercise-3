@@ -1,4 +1,4 @@
-package com.java.master.exercise1.config;
+package com.java.master.exercise3.config;
 
 import java.util.Optional;
 
